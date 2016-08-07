@@ -9,14 +9,13 @@ namespace trading {
 
 void HTTPServer::start(unsigned short port) {
     Poco::Net::ServerSocket svs(port);
-    _srv = new Poco::Net::HTTPServer(new trading::HandlerFactory(), 
+    _srv = std::make_unique<Poco::Net::HTTPServer>(new trading::HandlerFactory(), 
         svs, new Poco::Net::HTTPServerParams);
     _srv->start();
 }
 
 void HTTPServer::stop() {
     _srv->stop();
-    delete _srv;
 }
 
 } // namespace trading

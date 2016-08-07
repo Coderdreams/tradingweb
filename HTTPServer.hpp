@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Poco/Net/HTTPServer.h>
+#include <memory>
 
 namespace trading {
 
@@ -11,7 +12,7 @@ public:
     void stop();
 
 private:
-    Poco::Net::HTTPServer* _srv;
+    std::unique_ptr<Poco::Net::HTTPServer> _srv;
 };
 
 } // namespace trading

@@ -6,7 +6,7 @@ OBJDIR  = obj
 OBJS    := $(patsubst %.$(SRCEXT),$(OBJDIR)/%.o,$(SRCS))
 OFLAGS  = -lPocoNet -lPocoUtil -lPocoFoundation
 INCLUDE = -I.
-CFLAGS  = -Wall -DEBUG -c $(DEBUG) $(INCLUDE)
+CFLAGS  = -Wall -std=c++14 -DEBUG -c $(DEBUG) $(INCLUDE)
 CPP     = g++
 
 
