@@ -1,5 +1,7 @@
 #include "HandlerFactory.hpp"
 #include "handler/Home.hpp"
+#include "handler/SignUp.hpp"
+#include "handler/Login.hpp"
 
 namespace trading {
 
@@ -19,6 +21,8 @@ HTTPRequestHandler* HandlerFactory::createRequestHandler(
         return new trading::handler::Home(_format);
     else if (request.getURI() == "/login")
         return new trading::handler::Login(_format);
+    else if (request.getURI() == "/signup")
+        return new trading::handler::SignUp(_format);
     else
         return 0;
 }
