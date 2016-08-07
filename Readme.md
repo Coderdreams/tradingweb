@@ -1,3 +1,3 @@
 # Dependencies
 
-sudo apt-get install g++ libpoco-dev
+sudo apt-get install g++ libpoco-dev libcppunit-dev

@@ -8,7 +8,7 @@
 
 namespace trading {
 
-using Poco::Net::HTTPRequestHandler* HandlerFactory::createRequestHandler(
+Poco::Net::HTTPRequestHandler* HandlerFactory::createRequestHandler(
     const Poco::Net::HTTPServerRequest& request)
 {
     if (request.getURI() == "/")

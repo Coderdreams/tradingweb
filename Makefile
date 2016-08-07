@@ -1,7 +1,8 @@
 APP     = tradingApp
 SRCEXT  = cpp
+SRCDIR = trading/src
 SRCS    := $(shell find $(SRCDIR) -name '*.$(SRCEXT)')
-SRCDIRS := $(shell find . -name '*.$(SRCEXT)' -exec dirname {} \; | uniq)
+SRCDIRS := $(shell find $(SRCDIR) -name '*.$(SRCEXT)' -exec dirname {} \; | uniq)
 OBJDIR  = obj
 OBJS    := $(patsubst %.$(SRCEXT),$(OBJDIR)/%.o,$(SRCS))
 OFLAGS  = -lPocoNet -lPocoUtil -lPocoFoundation
