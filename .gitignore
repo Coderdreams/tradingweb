@@ -1,0 +1,6 @@
+*.o
+*.plist
+trading
+*~
+*.gch
+.vscode
