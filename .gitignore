@@ -1,6 +1,7 @@
 *.o
 *.plist
 tradingApp
+testsuite
 *~
 *.gch
 .vscode
