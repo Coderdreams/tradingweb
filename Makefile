@@ -5,7 +5,7 @@ SRCDIRS := $(shell find . -name '*.$(SRCEXT)' -exec dirname {} \; | uniq)
 OBJDIR  = obj
 OBJS    := $(patsubst %.$(SRCEXT),$(OBJDIR)/%.o,$(SRCS))
 OFLAGS  = -lPocoNet -lPocoUtil -lPocoFoundation
-INCLUDE = -I.
+INCLUDE = -I./src
 CFLAGS  = -Wall -std=c++14 -DEBUG -c $(DEBUG) $(INCLUDE)
 CPP     = g++
 
