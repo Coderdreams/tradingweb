@@ -14,8 +14,6 @@ using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Util::Application;
 
-Home::Home(const std::string& format): _format(format) {}
-
 void Home::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {

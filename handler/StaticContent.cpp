@@ -11,8 +11,6 @@ using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Util::Application;
 
-StaticContent::StaticContent(const std::string& format): _format(format) {}
-
 void StaticContent::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {

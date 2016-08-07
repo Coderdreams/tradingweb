@@ -10,13 +10,10 @@ namespace handler {
 class RegisterTrader : public Poco::Net::HTTPRequestHandler
 {
 public:
-    RegisterTrader(const std::string& format);
 
     void handleRequest(Poco::Net::HTTPServerRequest& request,
                        Poco::Net::HTTPServerResponse& response);
 
-private:
-    std::string _format;
 };
 
 } // namespace trading::handler

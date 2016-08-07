@@ -11,8 +11,6 @@ using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Util::Application;
 
-SignUp::SignUp(const std::string& format): _format(format) {}
-
 void SignUp::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {

@@ -13,8 +13,6 @@ using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Util::Application;
 
-RegisterTrader::RegisterTrader(const std::string& format): _format(format) {}
-
 void RegisterTrader::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {

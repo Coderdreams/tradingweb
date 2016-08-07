@@ -12,8 +12,6 @@ using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Util::Application;
 
-Login::Login(const std::string& format): _format(format) {}
-
 void Login::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {

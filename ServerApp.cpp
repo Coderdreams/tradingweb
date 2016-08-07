@@ -1,12 +1,8 @@
 #include "ServerApp.hpp"
-#include "HandlerFactory.hpp"
+#include "HTTPServer.hpp"
 
 #include <Poco/Util/Option.h>
 #include <Poco/Util/HelpFormatter.h>
-#include <Poco/Net/ServerSocket.h>
-#include <Poco/Net/HTTPServer.h>
-#include <Poco/Net/HTTPServerParams.h>
-#include <Poco/DateTimeFormat.h>
 #include <iostream>
 
 namespace trading {
@@ -17,10 +13,6 @@ using Poco::Util::OptionCallback;
 using Poco::Util::HelpFormatter;
 using Poco::Util::ServerApplication;
 using Poco::Util::Application;
-using Poco::Net::ServerSocket;
-using Poco::Net::HTTPServer;
-using Poco::Net::HTTPServerParams;
-using Poco::DateTimeFormat;
 
 ServerApp::ServerApp(): _helpRequested(false) {}
 
@@ -56,7 +48,7 @@ void ServerApp::handleHelp(const std::string& name,
     helpFormatter.setCommand(commandName());
     helpFormatter.setUsage("OPTIONS");
     helpFormatter.setHeader(
-        "A web server that serves the current date and time.");
+        "A trading app");
     helpFormatter.format(std::cout);
     stopOptionsProcessing();
     _helpRequested = true;
@@ -68,14 +60,8 @@ int ServerApp::main(const std::vector<std::string>& args)
     {
         unsigned short port = (unsigned short)
             config().getInt("HTTPTimeServer.port", 9980);
-        std::string format(
-            config().getString("HTTPTimeServer.format", 
-                                DateTimeFormat::SORTABLE_FORMAT));
-
-        ServerSocket svs(port);
-        HTTPServer srv(new trading::HandlerFactory(format), 
-            svs, new HTTPServerParams);
-        srv.start();
+        trading::HTTPServer srv;
+        srv.start(port);
         waitForTerminationRequest();
         srv.stop();
     }

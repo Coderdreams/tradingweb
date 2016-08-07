@@ -12,24 +12,19 @@ using Poco::Net::HTTPRequestHandler;
 using Poco::Net::HTTPRequestHandlerFactory;
 using Poco::Net::HTTPServerRequest;
 
-HandlerFactory::HandlerFactory(const std::string& format):
-    _format(format)
-{
-}
-
 HTTPRequestHandler* HandlerFactory::createRequestHandler(
     const HTTPServerRequest& request)
 {
     if (request.getURI() == "/")
-        return new trading::handler::Home(_format);
+        return new trading::handler::Home();
     else if (request.getURI() == "/login")
-        return new trading::handler::Login(_format);
+        return new trading::handler::Login();
     else if (request.getURI() == "/signup")
-        return new trading::handler::SignUp(_format);
+        return new trading::handler::SignUp();
     else if (request.getURI() == "/registerTrader")
-        return new trading::handler::RegisterTrader(_format);
+        return new trading::handler::RegisterTrader();
     else if (boost::starts_with(request.getURI(), "/static"))
-        return new trading::handler::StaticContent(_format);
+        return new trading::handler::StaticContent();
     else
         return 0;
 }
