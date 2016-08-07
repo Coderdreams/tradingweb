@@ -21,7 +21,8 @@ void StaticContent::handleRequest(HTTPServerRequest& request,
         + request.clientAddress().toString());
     std::string uri(request.getURI());
     std::string staticFolder("static/");
-    std::string templateFilePath(app.config().getString("application.dir") + staticFolder + uri.substr(staticFolder.length()));
+    std::string templateFilePath(app.config().getString("application.dir") + staticFolder + 
+        uri.substr(staticFolder.length()));
     response.sendFile(templateFilePath, "text/html");
 }
 
