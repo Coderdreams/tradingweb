@@ -2,11 +2,9 @@ APP     = tradingApp
 SRCEXT  = cpp
 SRCDIR = trading/src
 MAIN = app.cpp
-SRCSNOMAIN := $(shell find $(SRCDIR) -name '*.$(SRCEXT)' -not -name '$(MAIN)')
 SRCS := $(shell find $(SRCDIR) -name '*.$(SRCEXT)')
 SRCDIRS := $(shell find $(SRCDIR) -name '*.$(SRCEXT)' -exec dirname {} \; | uniq)
 OBJDIR  = obj
-OBJSNOMAIN := $(patsubst %.$(SRCEXT),$(OBJDIR)/%.o,$(SRCSNOMAIN))
 OBJS    := $(patsubst %.$(SRCEXT),$(OBJDIR)/%.o,$(SRCS))
 OFLAGS  = -lPocoNet -lPocoUtil -lPocoFoundation
 INCLUDE = -I./$(SRCDIR)
@@ -21,7 +19,7 @@ $(APP): buildrepo $(OBJS)
 	@$(CPP) $(OBJS) $(OFLAGS) -o $@
  
 test: $(APP)
-	$(CPP) $(OBJSNOMAIN) $(GCFLAGS) $(INCLUDE) -I./$(TESTDIR) $(TESTDIR)Main.cpp $(TESTDIR)HTTPServerTest.cpp  $(OFLAGS) -lcppunit -o testsuite 
+	$(CPP) $(GCFLAGS) $(INCLUDE) -I./$(TESTDIR) $(TESTDIR)Main.cpp $(TESTDIR)HTTPServerTest.cpp  $(OFLAGS) -lcppunit -o testsuite 
 
 $(OBJDIR)/%.o: %.$(SRCEXT)
 	@echo "$(CPP) $(CFLAGS) $< -o $@"

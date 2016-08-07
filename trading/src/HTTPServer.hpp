@@ -8,6 +8,7 @@ namespace trading {
 class HTTPServer
 {
 public:
+    void start(unsigned short port, bool keepAlive);
     void start(unsigned short port);
     void stop();
 
