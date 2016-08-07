@@ -33,7 +33,9 @@ void RegisterTrader::handleRequest(HTTPServerRequest& request,
         std::cout << "<h2>Form</h2><p>\n";
         std::cout << "username: " << form["username"] << ", pass: " << form["pass"] << "<br>\n";
     }
-
+    response.setContentType("text/html");
+    std::ostream& ostr = response.send();
+    ostr << "{\"success\": true}";
 }
 
 } // namespace trading::handler

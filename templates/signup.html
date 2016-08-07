@@ -1,9 +1,12 @@
 <html>
+<head>
+    <script src="static/jquery-3.1.0.min.js"></script> 
+</head>
 <body>
 
 <h2>Register</h2>
 
-<form action="registerTrader" method="post">
+<form id="registerTraderForm" action="registerTrader" method="post">
 <div>
 Username: <input type="text" name="username" /> 
 </div>
@@ -12,6 +15,31 @@ Password: <input type="password" name="pass" />
 </div>
 <input type="submit" value="Register" />
 </form>
+
+<script type="text/javascript">
+$(function() {
+    $("#registerTraderForm").submit(function(e) {
+        e.preventDefault();
+        console.log('test');
+        var actionurl = e.currentTarget.action;
+        $.ajax({
+                url: actionurl,
+                type: 'post',
+                dataType: 'json',
+                data: $("#registerTraderForm").serialize(),
+                success: function(data) {
+                    window.location.replace("/");
+                },
+                error: function(data) {
+                    console.log("Error");
+                    console.log(data);
+                }
+        });
+        return false;
+    });
+
+});
+</script>
 
 </body>
 </html>

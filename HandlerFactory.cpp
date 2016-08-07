@@ -3,6 +3,8 @@
 #include "handler/SignUp.hpp"
 #include "handler/Login.hpp"
 #include "handler/RegisterTrader.hpp"
+#include "handler/StaticContent.hpp"
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace trading {
 
@@ -26,6 +28,8 @@ HTTPRequestHandler* HandlerFactory::createRequestHandler(
         return new trading::handler::SignUp(_format);
     else if (request.getURI() == "/registerTrader")
         return new trading::handler::RegisterTrader(_format);
+    else if (boost::starts_with(request.getURI(), "/static"))
+        return new trading::handler::StaticContent(_format);
     else
         return 0;
 }
