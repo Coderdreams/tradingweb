@@ -1,11 +1,11 @@
-APP     = trading
+APP     = tradingApp
 SRCEXT  = cpp
 SRCS    := $(shell find $(SRCDIR) -name '*.$(SRCEXT)')
 SRCDIRS := $(shell find . -name '*.$(SRCEXT)' -exec dirname {} \; | uniq)
 OBJDIR  = obj
 OBJS    := $(patsubst %.$(SRCEXT),$(OBJDIR)/%.o,$(SRCS))
 OFLAGS  = -lPocoNet -lPocoUtil -lPocoFoundation
-INCLUDE = -I./src
+INCLUDE = -I./trading/src
 CFLAGS  = -Wall -std=c++14 -DEBUG -c $(DEBUG) $(INCLUDE)
 CPP     = g++
 
@@ -19,7 +19,7 @@ $(OBJDIR)/%.o: %.$(SRCEXT)
 	@$(CPP) $(CFLAGS) $< -o $@
  
 clean:
-	$(RM) -r $(OBJDIR)
+	$(RM) -r $(OBJDIR) $(APP)
  
 buildrepo:
 	$(call make-repo)
