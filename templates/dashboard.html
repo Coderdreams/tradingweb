@@ -1,0 +1,66 @@
+<html>
+<head>
+    <script src="static/jquery-3.1.0.min.js"></script> 
+</head>
+<body>
+
+<h2>Welcome</h2>
+
+<script>
+function quoteStock() {
+    $.get("quote", {"stockCode": $("#code").val()},
+        function(data) {
+            console.log(data);
+            console.log(data["quote"]);
+            $("#quote").text(data["quote"]);
+        }
+    );
+}
+</script>
+<form id="sellBuyForm" action="sellBuy" method="post">
+<div>
+Stock: <input type="text" name="code" id="code" /> Quantity: <input name="quantity" value="1" /> <input type="button" value="quote" onclick="quoteStock();" /> <span id="quote"></span>
+<select id="operation" >
+    <option value="sell">Sell</option>
+    <option value="buy">Buy</option>
+</input>
+<input type="submit" value="Go" />
+</div>
+</form>
+
+<div>
+Portfolio
+</div>
+<div>
+Transactions
+</div>
+
+
+<script type="text/javascript">
+$(function() {
+    var operation = $("#operation").val();
+    $("#registerTraderForm").submit(function(e) {
+        e.preventDefault();
+        var actionurl = e.currentTarget.action;
+        $
+        $.ajax({
+                url: operation,
+                type: 'post',
+                dataType: 'json',
+                data: $("#sellBuyForm").serialize(),
+                success: function(data) {
+                    window.location.replace("/");
+                },
+                error: function(data) {
+                    console.log("Error");
+                    console.log(data);
+                }
+        });
+        return false;
+    });
+
+});
+</script>
+
+</body>
+</html>

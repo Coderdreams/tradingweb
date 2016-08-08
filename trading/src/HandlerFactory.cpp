@@ -5,6 +5,7 @@
 #include "handler/RegisterTrader.hpp"
 #include "handler/StaticContent.hpp"
 #include "handler/Dashboard.hpp"
+#include "handler/Quote.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 
 namespace trading {
@@ -22,6 +23,8 @@ Poco::Net::HTTPRequestHandler* HandlerFactory::createRequestHandler(
         return new trading::handler::Dashboard();
     else if (request.getURI() == "/registerTrader")
         return new trading::handler::RegisterTrader();
+    else if (boost::starts_with(request.getURI(), "/quote"))
+        return new trading::handler::Quote();
     else if (boost::starts_with(request.getURI(), "/static"))
         return new trading::handler::StaticContent();
     else
