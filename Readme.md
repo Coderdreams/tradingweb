@@ -14,5 +14,5 @@ CREATE DATABASE tradingapp;
 
 # Populate the database with the starting script
 
-$ mysql -utradinop -pconnecttrade < database/schema.sql
+$ mysql -utradingop -pconnecttrade tradingapp < database/schema.sql
  
