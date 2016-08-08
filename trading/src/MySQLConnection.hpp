@@ -1,6 +1,7 @@
 
 #include "Poco/Util/JSONConfiguration.h"
 #include "Poco/JSON/JSONException.h"
+#include <Poco/Util/Application.h>
 #include "mysql_connection.h"
 
 #include <cppconn/driver.h>
@@ -17,7 +18,10 @@ class MySQLConnection {
     static sql::Connection* connect() {
         sql::Driver *driver = get_driver_instance();
         Poco::Util::JSONConfiguration config;
-        std::ifstream file("/home/pablo/trading/database_config.json");
+
+        Poco::Util::Application& app = Poco::Util::Application::instance();
+        std::ifstream file(app.config().getString("application.dir") + "/database_config.json");
+
         if (file) {
             try {
                 config.load(file);
