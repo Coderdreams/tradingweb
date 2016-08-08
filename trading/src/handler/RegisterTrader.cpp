@@ -1,4 +1,5 @@
 
+#include "MySQLConnection.hpp"
 #include "handler/RegisterTrader.hpp"
 
 #include <Poco/Util/Application.h>
@@ -7,14 +8,6 @@
 #include <Poco/StreamCopier.h>
 #include <iostream>
 #include <sstream>
-
-#include "mysql_connection.h"
-
-#include <cppconn/driver.h>
-#include <cppconn/exception.h>
-#include <cppconn/resultset.h>
-#include <cppconn/statement.h>
-#include <cppconn/prepared_statement.h>
 
 namespace trading {
 namespace handler {
@@ -54,11 +47,8 @@ void RegisterTrader::handleRequest(HTTPServerRequest& request,
 
 void RegisterTrader::saveUser(std::string username, std::string password) 
 {
-    sql::Driver *driver;
-
     try {
-        driver = get_driver_instance();
-        boost::scoped_ptr<sql::Connection> con(driver->connect("tcp://localhost:3306", "tradingop", "connecttrade"));
+        boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
         con->setSchema("tradingapp");
 
         boost::scoped_ptr< sql::PreparedStatement> prep_stmt(
