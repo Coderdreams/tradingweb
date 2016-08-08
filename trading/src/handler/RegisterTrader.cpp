@@ -14,6 +14,7 @@
 #include <cppconn/exception.h>
 #include <cppconn/resultset.h>
 #include <cppconn/statement.h>
+#include <cppconn/prepared_statement.h>
 
 namespace trading {
 namespace handler {
@@ -54,14 +55,18 @@ void RegisterTrader::handleRequest(HTTPServerRequest& request,
 void RegisterTrader::saveUser(std::string username, std::string password) 
 {
     sql::Driver *driver;
-    sql::Connection *con;
-    sql::Statement *stmt;
-    sql::ResultSet *res;
-
-    driver = get_driver_instance();
 
     try {
-        con = driver->connect("tcp://localhost:3306", "tradingop", "connecttrade");
+        driver = get_driver_instance();
+        boost::scoped_ptr<sql::Connection> con(driver->connect("tcp://localhost:3306", "tradingop", "connecttrade"));
+        con->setSchema("tradingapp");
+
+        boost::scoped_ptr< sql::PreparedStatement> prep_stmt(
+            con->prepareStatement("INSERT INTO user(name, pass) VALUES (?, PASSWORD(?))")
+        );
+        prep_stmt->setString(1, username);
+        prep_stmt->setString(2, password);
+        prep_stmt->execute();
     } catch (sql::SQLException &e) {
         std::cout << "# ERR: SQLException in " << __FILE__;
         std::cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
@@ -69,21 +74,7 @@ void RegisterTrader::saveUser(std::string username, std::string password)
         std::cout << " (MySQL error code: " << e.getErrorCode();
         exit(1);
     }
-    con->setSchema("tradingapp");
 
-    stmt = con->createStatement();
-    res = stmt->executeQuery("SELECT 'Hello World!' AS _message");
-    while (res->next()) {
-        std::cout << "\t... MySQL replies: ";
-
-        std::cout << res->getString("_message") << std::endl;
-        std::cout << "\t... MySQL says it again: ";
-
-        std::cout << res->getString(1) << std::endl;
-    }
-    delete res;
-    delete stmt;
-    delete con;
 }
 
 
