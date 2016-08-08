@@ -10,6 +10,7 @@
 #include "Poco/Util/LoggingSubsystem.h"
 #include <string>
 #include <iostream>
+#include <unistd.h>
 
 namespace trading {
 
@@ -20,11 +21,19 @@ using Poco::Util::Application;
 using Poco::Logger;
 using namespace std::string_literals;
 
-void HTTPServerTest::setUp() {
+HTTPServerTest::HTTPServerTest() {
+	std::cout << "setup\n";
 	std::string name("./tradingApp");
 	Poco::Process::Args args;
 	_ph = std::make_unique<Poco::ProcessHandle>(Poco::Process::launch(name, args));
+	usleep(15000); // FIXME: I have no way of determining that the process is listening on the port yet
 }
+
+HTTPServerTest::~HTTPServerTest() {
+	Poco::Process::requestTermination(_ph->id()); // Poco should terminate the process alone
+}
+
+void HTTPServerTest::setUp() {}
 
 void HTTPServerTest::tearDown() {}
 

@@ -19,7 +19,7 @@ $(APP): buildrepo $(OBJS)
 	@$(CPP) $(OBJS) $(OFLAGS) -o $@
  
 test: $(APP)
-	$(CPP) $(GCFLAGS) $(INCLUDE) -I./$(TESTDIR) $(TESTDIR)Main.cpp $(TESTDIR)HTTPServerTest.cpp  $(OFLAGS) -lcppunit -o testsuite 
+	$(CPP) $(GCFLAGS) -I./$(TESTDIR) $(TESTDIR)Main.cpp $(TESTDIR)HTTPServerTest.cpp  $(OFLAGS) -lcppunit -o testsuite 
 
 $(OBJDIR)/%.o: %.$(SRCEXT)
 	@echo "$(CPP) $(CFLAGS) $< -o $@"

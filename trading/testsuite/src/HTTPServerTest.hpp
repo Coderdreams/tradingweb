@@ -11,7 +11,8 @@ namespace trading {
 class HTTPServerTest : public CppUnit::TestCase
 {
 public:
-
+	HTTPServerTest();
+	~HTTPServerTest();
 	void testIdentityRequest();
 	void setUp();
 	void tearDown();
