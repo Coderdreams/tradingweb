@@ -1,0 +1,6 @@
+{ 
+    "host": "tcp://localhost:3306",
+    "database" : "tradingapp",
+    "user": "tradingop", 
+    "password": "connecttrade"
+}

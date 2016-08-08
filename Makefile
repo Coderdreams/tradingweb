@@ -6,7 +6,7 @@ SRCS := $(shell find $(SRCDIR) -name '*.$(SRCEXT)')
 SRCDIRS := $(shell find $(SRCDIR) -name '*.$(SRCEXT)' -exec dirname {} \; | uniq)
 OBJDIR  = obj
 OBJS    := $(patsubst %.$(SRCEXT),$(OBJDIR)/%.o,$(SRCS))
-OFLAGS  = -lPocoNet -lPocoUtil -lPocoFoundation -lmysqlcppconn 
+OFLAGS  = -lPocoNet -lPocoUtil -lPocoFoundation -lmysqlcppconn -lPocoJSON 
 INCLUDE = -I./$(SRCDIR)
 GCFLAGS = -Wall -std=c++14 -DEBUG
 CFLAGS  = $(GCFLAGS) -c $(DEBUG) $(INCLUDE)
@@ -19,7 +19,7 @@ $(APP): buildrepo $(OBJS)
 	@$(CPP) $(OBJS) $(OFLAGS) -o $@
  
 test: $(APP)
-	$(CPP) $(GCFLAGS) -I./$(TESTDIR) $(TESTDIR)Main.cpp $(TESTDIR)HTTPServerTest.cpp  $(OFLAGS) -lcppunit -o testsuite 
+	$(CPP) $(GCFLAGS) $(INCLUDE) -I./$(TESTDIR) $(TESTDIR)Main.cpp $(TESTDIR)HTTPServerTest.cpp  $(OFLAGS) -lcppunit -o testsuite 
 
 $(OBJDIR)/%.o: %.$(SRCEXT)
 	@echo "$(CPP) $(CFLAGS) $< -o $@"
