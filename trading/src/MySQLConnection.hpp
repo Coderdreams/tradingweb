@@ -1,3 +1,4 @@
+#pragma once
 
 #include "Poco/Util/JSONConfiguration.h"
 #include "Poco/JSON/JSONException.h"

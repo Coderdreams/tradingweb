@@ -1,10 +1,7 @@
-
-#include "handler/Login.hpp"
-#include "UserAuthentication.hpp"
+#include "handler/Dashboard.hpp"
 
 #include <Poco/Util/Application.h>
-#include <iostream>
-#include <fstream>
+#include <string>
 
 namespace trading {
 namespace handler {
@@ -13,7 +10,7 @@ using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Util::Application;
 
-void Login::handleRequest(HTTPServerRequest& request,
+void Dashboard::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {
     Application& app = Application::instance();
@@ -22,12 +19,13 @@ void Login::handleRequest(HTTPServerRequest& request,
 
     if (!request.hasCredentials()) 
     {
-        response.requireAuthentication("TradingApp");
-        response.setContentLength(0);
-        response.send();
-    } else if (UserAuthentication::isAuthorizedUser(request)) {
-        response.redirect("/dashboard");
+        app.logger().information("Can\t access.");
+        response.redirect("/");
+        return;
     }
+
+    std::string templateFilePath(app.config().getString("application.dir") + "templates/dashboard.html");
+    response.sendFile(templateFilePath, "text/html");
 }
 
 } // namespace trading::handler
