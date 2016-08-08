@@ -4,7 +4,9 @@
 #include <Poco/Util/Application.h>
 #include <Poco/Net/HTMLForm.h>
 #include <Poco/Net/NameValueCollection.h>
+#include <Poco/StreamCopier.h>
 #include <iostream>
+#include <sstream>
 
 namespace trading {
 namespace handler {
@@ -28,12 +30,17 @@ void RegisterTrader::handleRequest(HTTPServerRequest& request,
 
     Poco::Net::HTMLForm form(request, request.stream());
     if (!form.empty()) {
-        std::cout << "<h2>Form</h2><p>\n";
-        std::cout << "username: " << form["username"] << ", pass: " << form["pass"] << "<br>\n";
+        if (form.has("username") && form.has("pass")) {
+            response.setContentType("application/json");
+            std::string responseStr("{\"success\": true}");
+            response.sendBuffer(responseStr.data(), responseStr.length());
+        } else {
+            response.setContentType("application/json");
+            std::string responseStr("{\"success\": false}");
+            response.sendBuffer(responseStr.data(), responseStr.length());
+        }
     }
-    response.setContentType("text/html");
-    std::ostream& ostr = response.send();
-    ostr << "{\"success\": true}";
+
 }
 
 } // namespace trading::handler

@@ -20,7 +20,6 @@ Password: <input type="password" name="pass" />
 $(function() {
     $("#registerTraderForm").submit(function(e) {
         e.preventDefault();
-        console.log('test');
         var actionurl = e.currentTarget.action;
         $.ajax({
                 url: actionurl,

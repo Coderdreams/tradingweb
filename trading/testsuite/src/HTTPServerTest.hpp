@@ -13,7 +13,8 @@ class HTTPServerTest : public CppUnit::TestCase
 public:
 	HTTPServerTest();
 	~HTTPServerTest();
-	void testIdentityRequest();
+	void testThrowsErrorOnInvalidRequest();
+	void testSavesTrader();
 	void setUp();
 	void tearDown();
 

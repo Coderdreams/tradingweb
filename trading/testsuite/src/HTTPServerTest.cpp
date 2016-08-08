@@ -5,9 +5,11 @@
 #include <cppunit/TestSuite.h>
 #include "Poco/Net/HTTPClientSession.h"
 #include "Poco/Net/HTTPRequest.h"
+#include "Poco/Net/HTMLForm.h"
 #include "Poco/Net/HTTPResponse.h"
 #include "Poco/Util/Application.h"
 #include "Poco/Util/LoggingSubsystem.h"
+#include "Poco/StreamCopier.h"
 #include <string>
 #include <iostream>
 #include <unistd.h>
@@ -22,7 +24,6 @@ using Poco::Logger;
 using namespace std::string_literals;
 
 HTTPServerTest::HTTPServerTest() {
-	std::cout << "setup\n";
 	std::string name("./tradingApp");
 	Poco::Process::Args args;
 	_ph = std::make_unique<Poco::ProcessHandle>(Poco::Process::launch(name, args));
@@ -37,7 +38,7 @@ void HTTPServerTest::setUp() {}
 
 void HTTPServerTest::tearDown() {}
 
-void HTTPServerTest::testIdentityRequest()
+void HTTPServerTest::testThrowsErrorOnInvalidRequest()
 {
 	unsigned short port = 9980;
 
@@ -48,16 +49,55 @@ void HTTPServerTest::testIdentityRequest()
 	request.setContentType("text/plain");
 	cs.sendRequest(request) << body;
 
+	char expectedBody[] = "{\"success\": false}";
 	HTTPResponse response;
-	std::string rbody;
-	cs.receiveResponse(response) >> rbody;
+	
+	std::istream& is = cs.receiveResponse(response);
+	//cs.receiveResponse(response) >> rbody; // FIXME: this doesn't work and I had to resort to c chars, maybe a bug in POCO
 
-	std::cout << "hi";
-	std::cout << rbody << "\n done \n";
-			std::cout << response.getStatus() << " \n"; 
-	CPPUNIT_ASSERT_EQUAL(response.getContentLength(), (int) body.size());
-	CPPUNIT_ASSERT_EQUAL(response.getContentType(), "text/plain"s);
-	CPPUNIT_ASSERT_EQUAL(rbody, body);
+	unsigned int contentLength = response.getContentLength();
+	char rbody[500];
+	is.read(rbody, contentLength);
+	rbody[contentLength] = '\0';
+
+	CPPUNIT_ASSERT_EQUAL(response.getContentLength(), (int) strlen(expectedBody));
+	CPPUNIT_ASSERT_EQUAL(response.getContentType(), "application/json"s);
+	CPPUNIT_ASSERT_EQUAL(strcmp(expectedBody, rbody), 0);
+}
+
+void HTTPServerTest::testSavesTrader()
+{
+	unsigned short port = 9980;
+
+	HTTPClientSession cs("localhost", port);
+	std::string body("username=asdasd&pass=asdasd");
+
+	HTTPRequest request(HTTPRequest::HTTP_POST, "/registerTrader");
+
+	// FIXME: this should be helpful but it isn't working
+	//Poco::Net::HTMLForm form(Poco::Net::HTMLForm::ENCODING_MULTIPART); 
+	//form.add("username", "user1"); 
+	//form.add("pass", "test123");
+	//form.prepareSubmit(request); 
+
+	request.setContentLength((int) body.length());
+	request.setContentType("application/json");
+	cs.sendRequest(request) << body;
+
+	char expectedBody[] = "{\"success\": true}";
+	HTTPResponse response;
+	
+	std::istream& is = cs.receiveResponse(response);
+	//cs.receiveResponse(response) >> rbody; // FIXME: this doesn't work and I had to resort to c chars, maybe a bug in POCO
+
+	unsigned int contentLength = response.getContentLength();
+	char rbody[500];
+	is.read(rbody, contentLength);
+	rbody[contentLength] = '\0';
+
+	CPPUNIT_ASSERT_EQUAL(response.getContentLength(), (int) strlen(expectedBody));
+	CPPUNIT_ASSERT_EQUAL(response.getContentType(), "application/json"s);
+	CPPUNIT_ASSERT_EQUAL(strcmp(expectedBody, rbody), 0);
 }
 
 CppUnit::Test* HTTPServerTest::suite()
@@ -65,8 +105,12 @@ CppUnit::Test* HTTPServerTest::suite()
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("HTTPServerTest");
 
 	pSuite->addTest(new CppUnit::TestCaller<HTTPServerTest>(
-		"testIdentityRequest",
-		&HTTPServerTest::testIdentityRequest
+		"testThrowsErrorOnInvalidRequest",
+		&HTTPServerTest::testThrowsErrorOnInvalidRequest
+	));
+	pSuite->addTest(new CppUnit::TestCaller<HTTPServerTest>(
+		"testSavesTrader",
+		&HTTPServerTest::testSavesTrader
 	));
 
 	return pSuite;
