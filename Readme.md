@@ -21,9 +21,13 @@ $ sudo ldconfig
 
 $ mysql -uroot -p # credentials are specific to your server 
 
-CREATE USER 'tradingop'@'localhost' IDENTIFIED BY 'connecttrade';
-GRANT ALL PRIVILEGES ON tradingapp.* TO 'tradingop'@'localhost' WITH GRANT OPTION;
-CREATE DATABASE tradingapp;
+# On mysql's prompt copy and paste these:
+
+> CREATE USER 'tradingop'@'localhost' IDENTIFIED BY 'connecttrade';
+> GRANT ALL PRIVILEGES ON tradingapp.* TO 'tradingop'@'localhost' WITH GRANT OPTION;
+> CREATE DATABASE tradingapp;
+
+If the credentials need to be different change them here, and edit database_config.json to match them.
 
 # Populate the database with the starting script
 
