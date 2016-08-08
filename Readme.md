@@ -32,4 +32,5 @@ If the credentials need to be different change them here, and edit database_conf
 # Populate the database with the starting script
 
 $ mysql -utradingop -pconnecttrade tradingapp < database/schema.sql
+$ ./get_stock_data.sh | mysql -utradingop -pconnecttrade tradingapp
  
