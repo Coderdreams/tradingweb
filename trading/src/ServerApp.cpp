@@ -59,7 +59,7 @@ int ServerApp::main(const std::vector<std::string>& args)
     if (!_helpRequested)
     {
         unsigned short port = (unsigned short)
-            config().getInt("HTTPTimeServer.port", 9980);
+            config().getInt("TradingApp.port", 9980);
         trading::HTTPServer srv;
         srv.start(port);
         waitForTerminationRequest();

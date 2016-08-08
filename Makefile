@@ -6,7 +6,7 @@ SRCS := $(shell find $(SRCDIR) -name '*.$(SRCEXT)')
 SRCDIRS := $(shell find $(SRCDIR) -name '*.$(SRCEXT)' -exec dirname {} \; | uniq)
 OBJDIR  = obj
 OBJS    := $(patsubst %.$(SRCEXT),$(OBJDIR)/%.o,$(SRCS))
-OFLAGS  = -lPocoNet -lPocoUtil -lPocoFoundation
+OFLAGS  = -lPocoNet -lPocoUtil -lPocoFoundation -lmysqlcppconn 
 INCLUDE = -I./$(SRCDIR)
 GCFLAGS = -Wall -std=c++14 -DEBUG
 CFLAGS  = $(GCFLAGS) -c $(DEBUG) $(INCLUDE)
