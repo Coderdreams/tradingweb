@@ -50,15 +50,18 @@ bool Buy::buyStock(std::string const& stockCode, std::string const& quantity, st
     try {
         boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
         boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
-            con->prepareStatement("SELECT id, lastSalePrice FROM stock WHERE code = ?")
+            con->prepareStatement("SELECT id, lastSalePrice, (SELECT user.id FROM user WHERE name = ?) AS userId FROM stock WHERE code = ?")
         );
-        prep_stmt->setString(1, stockCode);
+        prep_stmt->setString(1, user);
+        prep_stmt->setString(2, stockCode);
         boost::scoped_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
         float lastSalePrice = 0;
         int stockId = 0;
+        int userId = 0;
         while (res->next()) {
             lastSalePrice = res->getDouble("lastSalePrice");
             stockId = res->getInt("id");
+            userId = res->getInt("userId");
         }
         if (stockId == 0) {
             return false;
@@ -72,6 +75,21 @@ bool Buy::buyStock(std::string const& stockCode, std::string const& quantity, st
         insert_stmt->setString(3, quantity);
         insert_stmt->setDouble(4, lastSalePrice);
         insert_stmt->execute();
+
+        boost::scoped_ptr<sql::PreparedStatement> portfolio_stmt(
+            con->prepareStatement(std::string("INSERT INTO portfolio (userId, stockId, quantity, totalCost) VALUES (") + 
+                "?, ?, ?, ?) ON DUPLICATE KEY UPDATE quantity=quantity+?, totalCost=totalCost+?"
+            )
+        );
+        int qty = std::stoi(quantity);
+        float costOfOperation = lastSalePrice * qty;
+        portfolio_stmt->setInt(1, userId);
+        portfolio_stmt->setInt(2, stockId);
+        portfolio_stmt->setInt(3, qty);
+        portfolio_stmt->setDouble(4, costOfOperation);
+        portfolio_stmt->setInt(5, qty);
+        portfolio_stmt->setDouble(6, costOfOperation);
+        portfolio_stmt->execute();
         return true;
     } catch (sql::SQLException &e) {
         std::cout << "# ERR: SQLException in " << __FILE__;
