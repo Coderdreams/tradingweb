@@ -5,6 +5,7 @@
 
 #include <Poco/Util/Application.h>
 #include <Poco/Net/HTMLForm.h>
+#include <Poco/Net/HTTPBasicCredentials.h>
 #include <string>
 
 namespace trading {
@@ -29,8 +30,9 @@ void Buy::handleRequest(HTTPServerRequest& request,
         if (!form.empty()) {
                 std::cout << "empty?" << std::endl;
             if (form.has("code") && form.has("quantity")) {
-                std::cout << "tiene los dos" << std::endl;
-                bool success = buyStock(form["code"], form["quantity"]);
+                Poco::Net::HTTPBasicCredentials cred(request);
+                const std::string& user = cred.getUsername(); 
+                bool success = buyStock(form["code"], form["quantity"], user);
                 response.setContentType("application/json");
                 std::string responseStr("{\"success\": " + std::to_string(success) + "}");
                 response.sendBuffer(responseStr.data(), responseStr.length());
@@ -43,7 +45,7 @@ void Buy::handleRequest(HTTPServerRequest& request,
     // }
 }
 
-bool Buy::buyStock(std::string const& stockCode, std::string const& quantity) 
+bool Buy::buyStock(std::string const& stockCode, std::string const& quantity, std::string const& user) 
 {
     try {
         boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
@@ -54,7 +56,6 @@ bool Buy::buyStock(std::string const& stockCode, std::string const& quantity)
         boost::scoped_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
         float lastSalePrice = 0;
         int stockId = 0;
-        int userId = 1; // FIXME: obtain user
         while (res->next()) {
             lastSalePrice = res->getDouble("lastSalePrice");
             stockId = res->getInt("id");
@@ -63,9 +64,10 @@ bool Buy::buyStock(std::string const& stockCode, std::string const& quantity)
             return false;
         }
         boost::scoped_ptr<sql::PreparedStatement> insert_stmt(
-            con->prepareStatement("INSERT INTO transaction (userId, stockId, quantity, price, dateOfTransaction, status) VALUES (?, ?, ?, ?, NOW(), 'pending')")
+            con->prepareStatement(std::string("INSERT INTO transaction (userId, stockId, quantity, price, dateOfTransaction, status) VALUES (") +
+                "(SELECT user.id FROM user WHERE name = ?), ?, ?, ?, NOW(), 'pending')")
         );
-        insert_stmt->setInt(1, userId);
+        insert_stmt->setString(1, user);
         insert_stmt->setInt(2, stockId);
         insert_stmt->setString(3, quantity);
         insert_stmt->setDouble(4, lastSalePrice);

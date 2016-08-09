@@ -51,7 +51,7 @@ std::string Transactions::get(std::string const& user)
         boost::scoped_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
         std::string strJson;
         while (res->next()) {
-            strJson += std::string("{\"stockCode\": \"") + res->getString("stockCode") + "\",";
+            strJson += std::string("{\"stock_code\": \"") + res->getString("stockCode") + "\",";
             strJson += std::string("\"quantity\": \"") + res->getString("quantity") + "\",";
             strJson += std::string("\"price\": \"") + res->getString("price") + "\",";
             strJson += std::string("\"date\": \"") + res->getString("dateOfTransaction") + "\",";

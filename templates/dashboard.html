@@ -1,6 +1,11 @@
 <html>
 <head>
     <script src="static/jquery-3.1.0.min.js"></script> 
+    <link rel="stylesheet" type="text/css" href="static/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="static/bootstrap/css/bootstrap-theme.min.css">
+    <script type="text/javascript" src="static/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="static/simpledatagrid/simple.datagrid.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/simpledatagrid/simple.datagrid.css">
 </head>
 <body>
 
@@ -16,6 +21,17 @@ function quoteStock() {
         }
     );
 }
+
+function loadTransactions() {
+    $.get("transactions", function(data) {
+        $('#transactionsGrid').simple_datagrid(
+            {
+                data: data["results"]
+            }
+        );
+    });
+}
+
 </script>
 <form id="sellBuyForm" action="sellBuy" method="post">
 <div>
@@ -33,11 +49,23 @@ Portfolio
 </div>
 <div>
 Transactions
-</div>
-
+<table id="transactionsGrid">
+  <thead>
+    <tr>
+      <th>Stock Code</th>
+      <th>Quantity</th>
+      <th>Price</th>
+      <th>Date</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+</table>
 
 <script type="text/javascript">
+
 $(function() {
+    loadTransactions();
+
     var operation = $("#operation").val();
     $("#sellBuyForm").submit(function(e) {
         e.preventDefault();
@@ -47,7 +75,7 @@ $(function() {
                 dataType: 'json',
                 data: $("#sellBuyForm").serialize(),
                 success: function(data) {
-                    console.log("reload transactions");
+                    loadTransactions();
                 },
                 error: function(data) {
                     console.log("Error");

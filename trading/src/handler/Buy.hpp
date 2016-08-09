@@ -15,7 +15,7 @@ public:
                        Poco::Net::HTTPServerResponse& response);
 
 private:
-	bool buyStock(std::string const& stockCode, std::string const& quantity);
+	bool buyStock(std::string const& stockCode, std::string const& quantity, std::string const& user);
 };
 
 } // namespace trading::handler
