@@ -24,7 +24,7 @@ void StockOperation::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {
     Application& app = Application::instance();
-    app.logger().information("Request " + _operation + " from "
+    app.logger().information(std::string("Request ") + _operation + std::string(" from ")
         + request.clientAddress().toString());
 
     if (!request.hasCredentials()) 
