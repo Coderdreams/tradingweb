@@ -32,6 +32,7 @@ void Quote::handleRequest(HTTPServerRequest& request,
                 response.setContentType("application/json");
                 std::string responseStr("{\"success\": true, \"quote\": " + std::to_string(quote) + "}");
                 response.sendBuffer(responseStr.data(), responseStr.length());
+                return;
             }
         }
         response.setContentType("application/json");
