@@ -68,9 +68,9 @@ bool Buy::buyStock(std::string const& stockCode, std::string const& quantity, st
         }
         boost::scoped_ptr<sql::PreparedStatement> insert_stmt(
             con->prepareStatement(std::string("INSERT INTO transaction (userId, stockId, quantity, price, dateOfTransaction, status) VALUES (") +
-                "(SELECT user.id FROM user WHERE name = ?), ?, ?, ?, NOW(), 'pending')")
+                "?, ?, ?, ?, NOW(), 'pending')")
         );
-        insert_stmt->setString(1, user);
+        insert_stmt->setInt(1, userId);
         insert_stmt->setInt(2, stockId);
         insert_stmt->setString(3, quantity);
         insert_stmt->setDouble(4, lastSalePrice);
