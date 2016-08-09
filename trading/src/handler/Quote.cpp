@@ -26,7 +26,6 @@ void Quote::handleRequest(HTTPServerRequest& request,
         response.redirect("/");
     } //else if (UserAuthentication::isAuthorizedUser(request)) { // FIXME: failing
         Poco::Net::HTMLForm form(request, request.stream());
-        std::cout << "ok hell \n";
         if (!form.empty()) {
             if (form.has("stockCode") && stockExists(form["stockCode"])) {
                 float quote = getQuote(form["stockCode"]);
