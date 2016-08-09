@@ -15,6 +15,9 @@
 function quoteStock() {
     $.get("quote", {"stockCode": $("#code").val()},
         function(data) {
+            if (!data["success"]) {
+                $("#quote").text("N/A");
+            }
             $("#quote").text(data["quote"]);
         }
     );
@@ -81,6 +84,7 @@ $(function() {
     $("#sellBuyForm").submit(function(e) {
         e.preventDefault();
         var operation = $("#operation").val();
+        quoteStock();
         $.ajax({
                 url: operation,
                 type: 'post',
