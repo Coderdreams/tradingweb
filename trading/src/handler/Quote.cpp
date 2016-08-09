@@ -1,7 +1,6 @@
 
 #include "handler/Quote.hpp"
 #include "MySQLConnection.hpp"
-#include "UserAuthentication.hpp"
 
 #include <Poco/Util/Application.h>
 #include <Poco/Net/HTMLForm.h>
@@ -21,24 +20,19 @@ void Quote::handleRequest(HTTPServerRequest& request,
     app.logger().information("Request quote from "
         + request.clientAddress().toString());
 
-    if (!request.hasCredentials()) 
-    {
-        response.redirect("/");
-    } //else if (UserAuthentication::isAuthorizedUser(request)) { // FIXME: failing
-        Poco::Net::HTMLForm form(request, request.stream());
-        if (!form.empty()) {
-            if (form.has("stockCode") && stockExists(form["stockCode"])) {
-                float quote = getQuote(form["stockCode"]);
-                response.setContentType("application/json");
-                std::string responseStr("{\"success\": true, \"quote\": " + std::to_string(quote) + "}");
-                response.sendBuffer(responseStr.data(), responseStr.length());
-                return;
-            }
+    Poco::Net::HTMLForm form(request, request.stream());
+    if (!form.empty()) {
+        if (form.has("stockCode") && stockExists(form["stockCode"])) {
+            float quote = getQuote(form["stockCode"]);
+            response.setContentType("application/json");
+            std::string responseStr("{\"success\": true, \"quote\": " + std::to_string(quote) + "}");
+            response.sendBuffer(responseStr.data(), responseStr.length());
+            return;
         }
-        response.setContentType("application/json");
-        std::string responseStr("{\"success\": false}");
-        response.sendBuffer(responseStr.data(), responseStr.length());
-    // }
+    }
+    response.setContentType("application/json");
+    std::string responseStr("{\"success\": false}");
+    response.sendBuffer(responseStr.data(), responseStr.length());
 }
 
 bool Quote::stockExists(std::string stockCode) 
