@@ -1,6 +1,6 @@
 # Dependencies
 
-Ubuntu 16.04 Xenial 64bits
+Ubuntu 16.04 Xenial 64bit
 
 Tested with gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.1) (check with g++ -v)
 
@@ -38,3 +38,12 @@ $ ./get_stock_data.sh | mysql -utradingop -pconnecttrade tradingapp
 
 $ ./run_tests.sh
 
+# To compile
+
+$ make
+
+# To execute the application
+
+$ ./tradingApp
+
+# Point your browser to http://localhost:9980
