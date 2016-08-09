@@ -30,10 +30,9 @@ void StockOperation::handleRequest(HTTPServerRequest& request,
     if (!request.hasCredentials()) 
     {
         response.redirect("/");
-    } //else if (UserAuthentication::isAuthorizedUser(request)) { // FIXME: failing
+    } else if (UserAuthentication::isAuthorizedUser(request)) {
         Poco::Net::HTMLForm form(request, request.stream());
         if (!form.empty()) {
-                std::cout << "empty?" << std::endl;
             if (form.has("code") && form.has("quantity")) {
                 Poco::Net::HTTPBasicCredentials cred(request);
                 const std::string& user = cred.getUsername(); 
@@ -47,7 +46,7 @@ void StockOperation::handleRequest(HTTPServerRequest& request,
         response.setContentType("application/json");
         std::string responseStr("{\"success\": false}");
         response.sendBuffer(responseStr.data(), responseStr.length());
-    // }
+    }
 }
 
 bool StockOperation::operate(std::string const& stockCode, std::string const& quantity, std::string const& user) 

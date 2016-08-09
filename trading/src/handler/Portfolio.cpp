@@ -25,7 +25,7 @@ void Portfolio::handleRequest(HTTPServerRequest& request,
     if (!request.hasCredentials()) 
     {
         response.redirect("/");
-    } //else if (UserAuthentication::isAuthorizedUser(request)) { // FIXME: failing
+    } else if (UserAuthentication::isAuthorizedUser(request)) {
         Poco::Net::HTTPBasicCredentials cred(request);
         const std::string& user = cred.getUsername(); 
         std::string jsonString(get(user));
@@ -33,7 +33,7 @@ void Portfolio::handleRequest(HTTPServerRequest& request,
         std::string responseStr("{\"success\": true, \"results\": " + jsonString + "}");
         response.sendBuffer(responseStr.data(), responseStr.length());
         return;
-    // }
+    }
 }
 
 std::string Portfolio::get(std::string const& user) 
