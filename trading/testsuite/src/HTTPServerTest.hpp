@@ -15,6 +15,7 @@ public:
 	~HTTPServerTest();
 	void testThrowsErrorOnInvalidRequest();
 	void testSavesTrader();
+	void testGetQuote();
 	void setUp();
 	void tearDown();
 
