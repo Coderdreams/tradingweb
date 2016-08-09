@@ -6,7 +6,7 @@
 #include "handler/StaticContent.hpp"
 #include "handler/Dashboard.hpp"
 #include "handler/Quote.hpp"
-#include "handler/Buy.hpp"
+#include "handler/StockOperation.hpp"
 #include "handler/Transactions.hpp"
 #include "handler/Portfolio.hpp"
 #include <boost/algorithm/string/predicate.hpp>
@@ -27,7 +27,9 @@ Poco::Net::HTTPRequestHandler* HandlerFactory::createRequestHandler(
     else if (request.getURI() == "/registerTrader")
         return new trading::handler::RegisterTrader();
     else if (request.getURI() == "/buy")
-        return new trading::handler::Buy();
+        return new trading::handler::StockOperation(trading::handler::StockOperation::BUY);
+    else if (request.getURI() == "/sell")
+        return new trading::handler::StockOperation(trading::handler::StockOperation::SELL);
     else if (boost::starts_with(request.getURI(), "/transactions"))
         return new trading::handler::Transactions();
     else if (boost::starts_with(request.getURI(), "/portfolio"))

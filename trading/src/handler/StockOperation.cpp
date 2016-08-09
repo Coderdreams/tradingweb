@@ -1,5 +1,5 @@
 
-#include "handler/Buy.hpp"
+#include "handler/StockOperation.hpp"
 #include "MySQLConnection.hpp"
 #include "UserAuthentication.hpp"
 
@@ -15,7 +15,12 @@ using Poco::Net::HTTPServerRequest;
 using Poco::Net::HTTPServerResponse;
 using Poco::Util::Application;
 
-void Buy::handleRequest(HTTPServerRequest& request,
+const std::string StockOperation::BUY   = "buy";
+const std::string StockOperation::SELL  = "sell";
+
+StockOperation::StockOperation(std::string const& operation) : _operation(operation) {}
+
+void StockOperation::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {
     Application& app = Application::instance();
@@ -32,7 +37,7 @@ void Buy::handleRequest(HTTPServerRequest& request,
             if (form.has("code") && form.has("quantity")) {
                 Poco::Net::HTTPBasicCredentials cred(request);
                 const std::string& user = cred.getUsername(); 
-                bool success = buyStock(form["code"], form["quantity"], user);
+                bool success = operate(form["code"], form["quantity"], user);
                 response.setContentType("application/json");
                 std::string responseStr("{\"success\": " + std::to_string(success) + "}");
                 response.sendBuffer(responseStr.data(), responseStr.length());
@@ -45,7 +50,7 @@ void Buy::handleRequest(HTTPServerRequest& request,
     // }
 }
 
-bool Buy::buyStock(std::string const& stockCode, std::string const& quantity, std::string const& user) 
+bool StockOperation::operate(std::string const& stockCode, std::string const& quantity, std::string const& user) 
 {
     try {
         boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
@@ -76,9 +81,13 @@ bool Buy::buyStock(std::string const& stockCode, std::string const& quantity, st
         insert_stmt->setDouble(4, lastSalePrice);
         insert_stmt->execute();
 
+        std::string op = "+";
+        if (_operation == SELL) {
+            op = "-";
+        }
         boost::scoped_ptr<sql::PreparedStatement> portfolio_stmt(
             con->prepareStatement(std::string("INSERT INTO portfolio (userId, stockId, quantity, totalCost) VALUES (") + 
-                "?, ?, ?, ?) ON DUPLICATE KEY UPDATE quantity=quantity+?, totalCost=totalCost+?"
+                "?, ?, ?, ?) ON DUPLICATE KEY UPDATE quantity=quantity" + op + "?, totalCost=totalCost" + op + "?"
             )
         );
         int qty = std::stoi(quantity);
