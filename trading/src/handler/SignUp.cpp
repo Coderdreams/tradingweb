@@ -15,7 +15,7 @@ void SignUp::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {
     Application& app = Application::instance();
-    app.logger().information("Request from "
+    app.logger().information("Request signup from "
         + request.clientAddress().toString());
 
     if (request.hasCredentials()) 

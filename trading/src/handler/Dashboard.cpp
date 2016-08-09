@@ -14,7 +14,7 @@ void Dashboard::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {
     Application& app = Application::instance();
-    app.logger().information("Request from "
+    app.logger().information("Request dashboard from "
         + request.clientAddress().toString());
 
     if (!request.hasCredentials()) 

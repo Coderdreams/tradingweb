@@ -17,7 +17,7 @@ void Login::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {
     Application& app = Application::instance();
-    app.logger().information("Request from "
+    app.logger().information("Request login from "
         + request.clientAddress().toString());
 
     if (request.hasCredentials() && UserAuthentication::isAuthorizedUser(request)) {

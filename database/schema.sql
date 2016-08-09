@@ -19,7 +19,7 @@ CREATE TABLE transaction (
   id INT UNSIGNED NOT NULL AUTO_INCREMENT,
   userId INT UNSIGNED NOT NULL,
   stockId INT UNSIGNED,
-  quantity INT UNSIGNED,
+  quantity INT,
   dateOfTransaction datetime NOT NULL,
   price FLOAT NOT NULL,
   status VARCHAR(255) NOT NULL,

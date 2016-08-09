@@ -15,7 +15,7 @@ void StaticContent::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {
     Application& app = Application::instance();
-    app.logger().information("Request from "
+    app.logger().information("Request static content from "
         + request.clientAddress().toString());
     std::string uri(request.getURI());
     std::string staticFolder("static/");

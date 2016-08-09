@@ -24,7 +24,7 @@ void StockOperation::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {
     Application& app = Application::instance();
-    app.logger().information("Request buy from "
+    app.logger().information("Request " + _operation + " from "
         + request.clientAddress().toString());
 
     if (!request.hasCredentials()) 
@@ -71,20 +71,20 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         if (stockId == 0) {
             return false;
         }
+        std::string op = "+";
+        if (_operation == SELL) {
+            op = "-";
+        }
         boost::scoped_ptr<sql::PreparedStatement> insert_stmt(
             con->prepareStatement(std::string("INSERT INTO transaction (userId, stockId, quantity, price, dateOfTransaction, status) VALUES (") +
                 "?, ?, ?, ?, NOW(), 'pending')")
         );
         insert_stmt->setInt(1, userId);
         insert_stmt->setInt(2, stockId);
-        insert_stmt->setString(3, quantity);
+        insert_stmt->setString(3, op + quantity);
         insert_stmt->setDouble(4, lastSalePrice);
         insert_stmt->execute();
 
-        std::string op = "+";
-        if (_operation == SELL) {
-            op = "-";
-        }
         boost::scoped_ptr<sql::PreparedStatement> portfolio_stmt(
             con->prepareStatement(std::string("INSERT INTO portfolio (userId, stockId, quantity, totalCost) VALUES (") + 
                 "?, ?, ?, ?) ON DUPLICATE KEY UPDATE quantity=quantity" + op + "?, totalCost=totalCost" + op + "?"

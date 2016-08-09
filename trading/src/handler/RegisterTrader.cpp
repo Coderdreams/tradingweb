@@ -20,7 +20,7 @@ void RegisterTrader::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {
     Application& app = Application::instance();
-    app.logger().information("Request from "
+    app.logger().information("Request register from "
         + request.clientAddress().toString());
 
     if (request.hasCredentials()) {

@@ -19,7 +19,7 @@ void Home::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {
     Application& app = Application::instance();
-    app.logger().information("Request from "
+    app.logger().information("Request home from "
         + request.clientAddress().toString());
 
     if(!request.hasCredentials()) 

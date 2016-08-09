@@ -19,7 +19,7 @@ void Transactions::handleRequest(HTTPServerRequest& request,
                     HTTPServerResponse& response)
 {
     Application& app = Application::instance();
-    app.logger().information("Request buy from "
+    app.logger().information("Request transactions from "
         + request.clientAddress().toString());
 
     if (!request.hasCredentials()) 
