@@ -8,6 +8,7 @@
 #include "handler/Quote.hpp"
 #include "handler/Buy.hpp"
 #include "handler/Transactions.hpp"
+#include "handler/Portfolio.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 
 namespace trading {
@@ -29,6 +30,8 @@ Poco::Net::HTTPRequestHandler* HandlerFactory::createRequestHandler(
         return new trading::handler::Buy();
     else if (boost::starts_with(request.getURI(), "/transactions"))
         return new trading::handler::Transactions();
+    else if (boost::starts_with(request.getURI(), "/portfolio"))
+        return new trading::handler::Portfolio();
     else if (boost::starts_with(request.getURI(), "/quote"))
         return new trading::handler::Quote();
     else if (boost::starts_with(request.getURI(), "/static"))

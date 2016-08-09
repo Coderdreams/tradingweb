@@ -32,6 +32,16 @@ function loadTransactions() {
     });
 }
 
+function loadPortfolio() {
+    $.get("portfolio", function(data) {
+        $('#portfolioGrid').simple_datagrid(
+            {
+                data: data["results"]
+            }
+        );
+    });
+}
+
 </script>
 <form id="sellBuyForm" action="sellBuy" method="post">
 <div>
@@ -44,11 +54,24 @@ Stock: <input type="text" name="code" id="code" /> Quantity: <input name="quanti
 </div>
 </form>
 
-<div>
+<h2>
 Portfolio
-</div>
-<div>
+</h2>
+
+<table id="portfolioGrid">
+  <thead>
+    <tr>
+      <th>Stock Code</th>
+      <th>Quantity</th>
+      <th>Cost</th>
+    </tr>
+  </thead>
+</table>
+
+<h2>
 Transactions
+</h2>
+
 <table id="transactionsGrid">
   <thead>
     <tr>
@@ -65,6 +88,7 @@ Transactions
 
 $(function() {
     loadTransactions();
+    loadPortfolio();
 
     var operation = $("#operation").val();
     $("#sellBuyForm").submit(function(e) {
@@ -76,6 +100,7 @@ $(function() {
                 data: $("#sellBuyForm").serialize(),
                 success: function(data) {
                     loadTransactions();
+                    loadPortfolio();
                 },
                 error: function(data) {
                     console.log("Error");
