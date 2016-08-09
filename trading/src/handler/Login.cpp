@@ -20,13 +20,12 @@ void Login::handleRequest(HTTPServerRequest& request,
     app.logger().information("Request from "
         + request.clientAddress().toString());
 
-    if (!request.hasCredentials()) 
-    {
+    if (request.hasCredentials() && UserAuthentication::isAuthorizedUser(request)) {
+        response.redirect("/dashboard");
+    } else {
         response.requireAuthentication("TradingApp");
         response.setContentLength(0);
         response.send();
-    } else if (UserAuthentication::isAuthorizedUser(request)) {
-        response.redirect("/dashboard");
     }
 }
 
