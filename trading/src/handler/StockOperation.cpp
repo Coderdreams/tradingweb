@@ -54,18 +54,35 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
     try {
         boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
         boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
-            con->prepareStatement("SELECT id, lastSalePrice, (SELECT user.id FROM user WHERE name = ?) AS userId FROM stock WHERE code = ?")
+            con->prepareStatement("SELECT id AS userId FROM user WHERE name = ?")
         );
         prep_stmt->setString(1, user);
-        prep_stmt->setString(2, stockCode);
         boost::scoped_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
-        float lastSalePrice = 0;
-        int stockId = 0;
         int userId = 0;
         while (res->next()) {
-            lastSalePrice = res->getDouble("lastSalePrice");
-            stockId = res->getInt("id");
             userId = res->getInt("userId");
+        }
+        if (userId == 0) {
+            return false;
+        }
+        boost::scoped_ptr<sql::PreparedStatement> stock_stmt(
+            con->prepareStatement("SELECT stock.id AS stockId, lastSalePrice, COALESCE(portfolio.quantity, 0) AS sharesBought \
+                FROM stock \
+                LEFT JOIN portfolio ON (portfolio.stockId = stock.id AND portfolio.userId = ?) \
+                WHERE code = ?"
+            )
+        );
+        stock_stmt->setInt(1, userId);
+        stock_stmt->setString(2, stockCode);
+        boost::scoped_ptr<sql::ResultSet> res_stock(stock_stmt->executeQuery());
+        float lastSalePrice = 0;
+        int stockId = 0;
+        int sharesBought = 0;
+        int qty = std::stoi(quantity);
+        while (res_stock->next()) {
+            lastSalePrice = res_stock->getDouble("lastSalePrice");
+            stockId = res_stock->getInt("stockId");
+            sharesBought = res_stock->getInt("sharesBought");
         }
         if (stockId == 0) {
             return false;
@@ -73,6 +90,9 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         std::string op = "+";
         if (_operation == SELL) {
             op = "-";
+            if (qty > sharesBought) { // Not allowing to sell shares you don't own
+                return false;
+            }
         }
         boost::scoped_ptr<sql::PreparedStatement> insert_stmt(
             con->prepareStatement(std::string("INSERT INTO transaction (userId, stockId, quantity, price, dateOfTransaction, status) VALUES (") +
@@ -89,7 +109,6 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
                 "?, ?, ?, ?) ON DUPLICATE KEY UPDATE quantity=quantity" + op + "?, totalCost=totalCost" + op + "?"
             )
         );
-        int qty = std::stoi(quantity);
         float costOfOperation = lastSalePrice * qty;
         portfolio_stmt->setInt(1, userId);
         portfolio_stmt->setInt(2, stockId);
