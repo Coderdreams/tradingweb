@@ -16,7 +16,11 @@ public:
 	void testThrowsErrorOnInvalidRequest();
 	void testSavesTrader();
 	void testGetQuote();
+	void testBuyUnauthorized();
 	void testBuy();
+	void testSell();
+	void testPortfolio();
+	void testTransactions();
 	void setUp();
 	void tearDown();
 
