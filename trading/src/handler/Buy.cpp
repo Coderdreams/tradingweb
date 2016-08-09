@@ -23,7 +23,6 @@ void Buy::handleRequest(HTTPServerRequest& request,
 
     if (!request.hasCredentials()) 
     {
-            std::cout << "no creds" << std::endl;
         response.redirect("/");
     } //else if (UserAuthentication::isAuthorizedUser(request)) { // FIXME: failing
         Poco::Net::HTMLForm form(request, request.stream());
@@ -46,13 +45,11 @@ void Buy::handleRequest(HTTPServerRequest& request,
 
 bool Buy::buyStock(std::string const& stockCode, std::string const& quantity) 
 {
-    std::cout << "nada aquit?" << stockCode << std::endl;
     try {
         boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
         boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
             con->prepareStatement("SELECT id, lastSalePrice FROM stock WHERE code = ?")
         );
-        std::cout << "nada?" << stockCode << std::endl;
         prep_stmt->setString(1, stockCode);
         boost::scoped_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
         float lastSalePrice = 0;
@@ -62,6 +59,9 @@ bool Buy::buyStock(std::string const& stockCode, std::string const& quantity)
             lastSalePrice = res->getDouble("lastSalePrice");
             stockId = res->getInt("id");
         }
+        if (stockId == 0) {
+            return false;
+        }
         boost::scoped_ptr<sql::PreparedStatement> insert_stmt(
             con->prepareStatement("INSERT INTO transaction (userId, stockId, quantity, price, dateOfTransaction, status) VALUES (?, ?, ?, ?, NOW(), 'pending')")
         );
@@ -69,8 +69,6 @@ bool Buy::buyStock(std::string const& stockCode, std::string const& quantity)
         insert_stmt->setInt(2, stockId);
         insert_stmt->setString(3, quantity);
         insert_stmt->setDouble(4, lastSalePrice);
-        std::cout << insert_stmt->getWarnings() << std::endl;
-        std::cout << "sususususus" << std::endl;
         insert_stmt->execute();
         return true;
     } catch (sql::SQLException &e) {
