@@ -15,34 +15,12 @@
 function quoteStock() {
     $.get("quote", {"stockCode": $("#code").val()},
         function(data) {
-            console.log(data);
-            console.log(data["quote"]);
             $("#quote").text(data["quote"]);
         }
     );
 }
-
-function loadTransactions() {
-    $.get("transactions", function(data) {
-        $('#transactionsGrid').simple_datagrid(
-            {
-                data: data["results"]
-            }
-        );
-    });
-}
-
-function loadPortfolio() {
-    $.get("portfolio", function(data) {
-        $('#portfolioGrid').simple_datagrid(
-            {
-                data: data["results"]
-            }
-        );
-    });
-}
-
 </script>
+
 <form id="sellBuyForm" action="sellBuy" method="post">
 <div>
 Stock: <input type="text" name="code" id="code" /> Quantity: <input name="quantity" value="1" /> <input type="button" value="quote" onclick="quoteStock();" /> <span id="quote"></span>
@@ -87,20 +65,29 @@ Transactions
 <script type="text/javascript">
 
 $(function() {
-    loadTransactions();
-    loadPortfolio();
+    function loadProfiles() {
+        $.get("transactions", function(data) {
+            $('#transactionsGrid').simple_datagrid('loadData', data["results"]);
+        });
 
-    var operation = $("#operation").val();
+        $.get("portfolio", function(data) {
+            $('#portfolioGrid').simple_datagrid('loadData', data["results"]);
+        });
+    }
+
+    $('#transactionsGrid').simple_datagrid();
+    $('#portfolioGrid').simple_datagrid();
+    loadProfiles();
     $("#sellBuyForm").submit(function(e) {
         e.preventDefault();
+        var operation = $("#operation").val();
         $.ajax({
                 url: operation,
                 type: 'post',
                 dataType: 'json',
                 data: $("#sellBuyForm").serialize(),
                 success: function(data) {
-                    loadTransactions();
-                    loadPortfolio();
+                    loadProfiles()
                 },
                 error: function(data) {
                     console.log("Error");
