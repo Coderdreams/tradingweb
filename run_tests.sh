@@ -1,0 +1,1 @@
+./recreate_database.sh && make test && ./testsuite
