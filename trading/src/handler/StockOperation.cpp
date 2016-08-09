@@ -39,7 +39,7 @@ void StockOperation::handleRequest(HTTPServerRequest& request,
                 const std::string& user = cred.getUsername(); 
                 bool success = operate(form["code"], form["quantity"], user);
                 response.setContentType("application/json");
-                std::string responseStr("{\"success\": " + std::to_string(success) + "}");
+                std::string responseStr(std::string("{\"success\": ") + (success ? "true" : "false") + "}");
                 response.sendBuffer(responseStr.data(), responseStr.length());
                 return;
             }

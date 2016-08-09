@@ -5,6 +5,7 @@
 #include <cppunit/TestCaller.h>
 #include <cppunit/TestSuite.h>
 #include "Poco/Net/HTTPClientSession.h"
+#include <Poco/Net/HTTPBasicCredentials.h>
 #include "Poco/Net/HTTPRequest.h"
 #include "Poco/Net/HTMLForm.h"
 #include "Poco/Net/HTTPResponse.h"
@@ -140,23 +141,25 @@ void HTTPServerTest::testGetQuote()
 	CPPUNIT_ASSERT_EQUAL(response.getContentType(), "application/json"s);
 	CPPUNIT_ASSERT_EQUAL(strcmp(expectedBody, rbody), 0);
 }
-/*
+
 void HTTPServerTest::testBuy()
 {
 	unsigned short port = 9980;
 
 	HTTPClientSession cs("localhost", port);
-	std::string testtrader("testtrader");
-
 	HTTPRequest request(HTTPRequest::HTTP_POST, "/buy");
+	std::string testtrader("testtrader");
+    Poco::Net::HTTPBasicCredentials cred(testtrader, "test123");
+    cred.authenticate(request);
 
 	Poco::Net::HTMLForm form;
-	form.add("stockCode", "TXT");
+	form.add("code", "TXT");
+	form.add("quantity", "10");
 	form.prepareSubmit(request); 
 	request.setContentType("application/json");
 	form.write(cs.sendRequest(request));
 
-	char expectedBody[] = "{\"success\": true, \"quote\": 57.939999}";
+	char expectedBody[] = "{\"success\": true}";
 	HTTPResponse response;
 	
 	std::istream& is = cs.receiveResponse(response);
@@ -165,25 +168,39 @@ void HTTPServerTest::testBuy()
 	char rbody[500];
 	is.read(rbody, contentLength);
 	rbody[contentLength] = '\0';
-
+	
 	boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
 	boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
-		con->prepareStatement("SELECT id FROM user WHERE name = ?")
+		con->prepareStatement("SELECT stock.code AS stockCode, quantity, price, dateOfTransaction, status FROM transaction \
+			LEFT JOIN user ON (user.id = transaction.userId) \
+			LEFT JOIN stock ON (stock.id = transaction.stockId) \
+			WHERE user.name = ?"
+		)
 	);
 	prep_stmt->setString(1, testtrader);
 	boost::scoped_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
-	int id = 0;
+	std::string stockCode;
+	int quantity = 0;
+	double price = 0;
 	while (res->next()) {
-		id = res->getInt("id");
+		stockCode = res->getString("stockCode");
+		quantity = res->getInt("quantity");
+		price = res->getDouble("price");
 	}
-	CPPUNIT_ASSERT(id > 0);
+	CPPUNIT_ASSERT_EQUAL(stockCode, std::string("TXT"));
+	CPPUNIT_ASSERT_EQUAL(quantity, 10);
+	char expectedPrice[24] = "57.94";
+	char actualPrice[24];
+	sprintf(actualPrice, "%.2f", price);
+
+	CPPUNIT_ASSERT_EQUAL(strcmp(expectedPrice, actualPrice), 0);
 	int expectedBodyLength = (int) strlen(expectedBody);
 	int responseLength = (int) response.getContentLength();
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(rbody, responseLength, expectedBodyLength);
 	CPPUNIT_ASSERT_EQUAL(response.getContentType(), "application/json"s);
 	CPPUNIT_ASSERT_EQUAL(strcmp(expectedBody, rbody), 0);
 }
-*/
+
 CppUnit::Test* HTTPServerTest::suite()
 {
 	CppUnit::TestSuite* pSuite = new CppUnit::TestSuite("HTTPServerTest");
@@ -200,7 +217,10 @@ CppUnit::Test* HTTPServerTest::suite()
 		"testGetQuote",
 		&HTTPServerTest::testGetQuote
 	));
-
+	pSuite->addTest(new CppUnit::TestCaller<HTTPServerTest>(
+		"testBuy",
+		&HTTPServerTest::testBuy
+	));
 	return pSuite;
 }
 

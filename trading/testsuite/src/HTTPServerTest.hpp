@@ -16,6 +16,7 @@ public:
 	void testThrowsErrorOnInvalidRequest();
 	void testSavesTrader();
 	void testGetQuote();
+	void testBuy();
 	void setUp();
 	void tearDown();
 
