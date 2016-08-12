@@ -40,22 +40,30 @@ std::string Portfolio::get(std::string const& user)
 {
     try {
         boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
+        boost::scoped_ptr<sql::PreparedStatement> user_stmt(
+            con->prepareStatement("SELECT id AS userId, FORMAT(balancecash, 2) AS balanceCash FROM user WHERE name = ?")
+        );
+        user_stmt->setString(1, user);
+        boost::scoped_ptr<sql::ResultSet> res_user(user_stmt->executeQuery());
+        int userId = 0;
+        std::string balanceCash;
+        while (res_user->next()) {
+            userId = res_user->getInt("userId");
+            balanceCash = res_user->getString("balanceCash");
+        }
         boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
-            con->prepareStatement(std::string("SELECT stock.code as stockCode, FORMAT(balancecash, 2) AS balanceCash, quantity, FORMAT(totalCost, 2) AS totalCost FROM portfolio ") +
-                " LEFT JOIN user ON (portfolio.userId = user.id) " +
+            con->prepareStatement(std::string("SELECT stock.code as stockCode, quantity, FORMAT(totalCost, 2) AS totalCost FROM portfolio ") +
                 " LEFT JOIN stock ON (portfolio.stockId = stock.id) " +
-                " WHERE user.name = ?"
+                " WHERE portfolio.userId = ?"
             )
         );
-        prep_stmt->setString(1, user);
+        prep_stmt->setInt(1, userId);
         boost::scoped_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
         std::string strJson;
-        std::string balanceCash;
         while (res->next()) {
             strJson += std::string("{\"stock_code\": \"") + res->getString("stockCode") + "\",";
             strJson += std::string("\"quantity\": \"") + res->getString("quantity") + "\",";
             strJson += std::string("\"cost\": \"") + res->getString("totalCost") + "\"}";
-            balanceCash = res->getString("balanceCash");
             if (!res->isLast()) {
                 strJson += ",";
             }

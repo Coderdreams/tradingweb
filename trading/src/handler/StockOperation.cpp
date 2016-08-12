@@ -91,8 +91,10 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         }
         float costOfOperation = lastSalePrice * qty;
         std::string op = "+";
+        std::string balanceOp = "-";
         if (_operation == SELL) {
             op = "-";
+            balanceOp = "-";
             if (qty > sharesBought) { // Not allowing to sell shares you don't own
                 return false;
             }
@@ -123,7 +125,7 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         portfolio_stmt->execute();
 
         boost::scoped_ptr<sql::PreparedStatement> balance_stmt(
-            con->prepareStatement(std::string("UPDATE user SET balancecash=balancecash" + op + "? WHERE id=?"))
+            con->prepareStatement(std::string("UPDATE user SET balancecash=balancecash" + balanceOp + "? WHERE id=?"))
         );
         balance_stmt->setDouble(1, costOfOperation);
         balance_stmt->setInt(2, userId);
