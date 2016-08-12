@@ -41,7 +41,7 @@ std::string Portfolio::get(std::string const& user)
     try {
         boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
         boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
-            con->prepareStatement(std::string("SELECT stock.code as stockCode, quantity, totalCost FROM portfolio ") +
+            con->prepareStatement(std::string("SELECT stock.code as stockCode, FORMAT(balancecash, 2) AS balanceCash, quantity, FORMAT(totalCost, 2) AS totalCost FROM portfolio ") +
                 " LEFT JOIN user ON (portfolio.userId = user.id) " +
                 " LEFT JOIN stock ON (portfolio.stockId = stock.id) " +
                 " WHERE user.name = ?"
@@ -50,15 +50,17 @@ std::string Portfolio::get(std::string const& user)
         prep_stmt->setString(1, user);
         boost::scoped_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
         std::string strJson;
+        std::string balanceCash;
         while (res->next()) {
             strJson += std::string("{\"stock_code\": \"") + res->getString("stockCode") + "\",";
             strJson += std::string("\"quantity\": \"") + res->getString("quantity") + "\",";
             strJson += std::string("\"cost\": \"") + res->getString("totalCost") + "\"}";
+            balanceCash = res->getString("balanceCash");
             if (!res->isLast()) {
                 strJson += ",";
             }
         }
-        return std::string("[" + strJson + "]");
+        return std::string("[" + strJson + "], \"balanceCash\": \"" + balanceCash + "\"");
     } catch (sql::SQLException &e) {
         std::cout << "# ERR: SQLException in " << __FILE__;
         std::cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;

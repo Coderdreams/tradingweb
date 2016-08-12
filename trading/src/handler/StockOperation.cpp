@@ -66,7 +66,7 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
             return false;
         }
         boost::scoped_ptr<sql::PreparedStatement> stock_stmt(
-            con->prepareStatement("SELECT stock.id AS stockId, lastSalePrice, COALESCE(portfolio.quantity, 0) AS sharesBought \
+            con->prepareStatement("SELECT stock.id AS stockId, balancecash AS balanceCash, lastSalePrice, COALESCE(portfolio.quantity, 0) AS sharesBought \
                 FROM stock \
                 LEFT JOIN portfolio ON (portfolio.stockId = stock.id AND portfolio.userId = ?) \
                 WHERE code = ?"
@@ -76,6 +76,7 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         stock_stmt->setString(2, stockCode);
         boost::scoped_ptr<sql::ResultSet> res_stock(stock_stmt->executeQuery());
         float lastSalePrice = 0;
+        float balanceCash = 0;
         int stockId = 0;
         int sharesBought = 0;
         int qty = std::stoi(quantity);
@@ -83,16 +84,20 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
             lastSalePrice = res_stock->getDouble("lastSalePrice");
             stockId = res_stock->getInt("stockId");
             sharesBought = res_stock->getInt("sharesBought");
+            balanceCash = res_stock->getDouble("balanceCash");
         }
         if (stockId == 0) {
             return false;
         }
+        float costOfOperation = lastSalePrice * qty;
         std::string op = "+";
         if (_operation == SELL) {
             op = "-";
             if (qty > sharesBought) { // Not allowing to sell shares you don't own
                 return false;
             }
+        } else if (costOfOperation > balanceCash) {
+            return false;
         }
         boost::scoped_ptr<sql::PreparedStatement> insert_stmt(
             con->prepareStatement(std::string("INSERT INTO transaction (userId, stockId, quantity, price, dateOfTransaction, status) VALUES (") +
@@ -109,7 +114,6 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
                 "?, ?, ?, ?) ON DUPLICATE KEY UPDATE quantity=quantity" + op + "?, totalCost=totalCost" + op + "?"
             )
         );
-        float costOfOperation = lastSalePrice * qty;
         portfolio_stmt->setInt(1, userId);
         portfolio_stmt->setInt(2, stockId);
         portfolio_stmt->setInt(3, qty);
@@ -117,6 +121,13 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         portfolio_stmt->setInt(5, qty);
         portfolio_stmt->setDouble(6, costOfOperation);
         portfolio_stmt->execute();
+
+        boost::scoped_ptr<sql::PreparedStatement> balance_stmt(
+            con->prepareStatement(std::string("UPDATE user SET balanceCash=balanceCash" + op + "? WHERE id=?"))
+        );
+        balance_stmt->setDouble(1, costOfOperation);
+        balance_stmt->setInt(2, userId);
+        balance_stmt->execute();
         return true;
     } catch (sql::SQLException &e) {
         std::cout << "# ERR: SQLException in " << __FILE__;
