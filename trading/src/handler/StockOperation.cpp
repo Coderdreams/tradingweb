@@ -54,19 +54,21 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
     try {
         boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
         boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
-            con->prepareStatement("SELECT id AS userId FROM user WHERE name = ?")
+            con->prepareStatement("SELECT id AS userId, balancecash AS balanceCash FROM user WHERE name = ?")
         );
         prep_stmt->setString(1, user);
         boost::scoped_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
         int userId = 0;
+        float balanceCash = 0;
         while (res->next()) {
             userId = res->getInt("userId");
+            balanceCash = res->getDouble("balanceCash");
         }
         if (userId == 0) {
             return false;
         }
         boost::scoped_ptr<sql::PreparedStatement> stock_stmt(
-            con->prepareStatement("SELECT stock.id AS stockId, balancecash AS balanceCash, lastSalePrice, COALESCE(portfolio.quantity, 0) AS sharesBought \
+            con->prepareStatement("SELECT stock.id AS stockId, lastSalePrice, COALESCE(portfolio.quantity, 0) AS sharesBought \
                 FROM stock \
                 LEFT JOIN portfolio ON (portfolio.stockId = stock.id AND portfolio.userId = ?) \
                 WHERE code = ?"
@@ -76,7 +78,6 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         stock_stmt->setString(2, stockCode);
         boost::scoped_ptr<sql::ResultSet> res_stock(stock_stmt->executeQuery());
         float lastSalePrice = 0;
-        float balanceCash = 0;
         int stockId = 0;
         int sharesBought = 0;
         int qty = std::stoi(quantity);
@@ -84,7 +85,6 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
             lastSalePrice = res_stock->getDouble("lastSalePrice");
             stockId = res_stock->getInt("stockId");
             sharesBought = res_stock->getInt("sharesBought");
-            balanceCash = res_stock->getDouble("balanceCash");
         }
         if (stockId == 0) {
             return false;
@@ -123,7 +123,7 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         portfolio_stmt->execute();
 
         boost::scoped_ptr<sql::PreparedStatement> balance_stmt(
-            con->prepareStatement(std::string("UPDATE user SET balanceCash=balanceCash" + op + "? WHERE id=?"))
+            con->prepareStatement(std::string("UPDATE user SET balancecash=balancecash" + op + "? WHERE id=?"))
         );
         balance_stmt->setDouble(1, costOfOperation);
         balance_stmt->setInt(2, userId);
