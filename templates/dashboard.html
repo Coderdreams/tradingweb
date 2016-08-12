@@ -28,7 +28,7 @@ function quoteStock() {
 
 <form id="sellBuyForm" action="sellBuy" method="post">
 <div>
-Stock: <input type="text" name="code" id="code" /> Quantity: <input name="quantity" value="1" /> <input type="button" value="quote" onclick="quoteStock();" /> <span id="quote"></span>
+Stock: <input type="text" name="code" id="code" /> Quantity: <input name="quantity" value="1" type="number" /> <input type="button" value="quote" onclick="quoteStock();" /> <span id="quote"></span>
 <select id="operation" >
     <option value="buy">Buy</option>
     <option value="sell">Sell</option>
