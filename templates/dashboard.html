@@ -15,10 +15,12 @@
 function quoteStock() {
     $.get("quote", {"stockCode": $("#code").val()},
         function(data) {
-            if (!data["success"]) {
+            if (data["success"]) {
+                $("#quote").text(data["quote"].toFixed(2));
+            } else {
                 $("#quote").text("N/A");
             }
-            $("#quote").text(data["quote"]);
+            
         }
     );
 }
