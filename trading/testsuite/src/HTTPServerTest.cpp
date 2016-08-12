@@ -273,14 +273,14 @@ void HTTPServerTest::testTransactions()
 	Poco::JSON::Object::Ptr result1 = arr->getObject(0);
 	CPPUNIT_ASSERT_EQUAL(result1->getValue<std::string>("stock_code"), std::string("TXT"));
 	CPPUNIT_ASSERT_EQUAL(result1->getValue<std::string>("quantity"), std::string("10"));
-	CPPUNIT_ASSERT_EQUAL(result1->getValue<std::string>("price"), std::string("57.94"));
+	CPPUNIT_ASSERT_EQUAL(result1->getValue<std::string>("price"), std::string("579.40"));
 	CPPUNIT_ASSERT(result1->getValue<std::string>("date") != ""); // FIXME: verify it's a correct date
 	CPPUNIT_ASSERT_EQUAL(result1->getValue<std::string>("status"), std::string("pending"));
 
 	Poco::JSON::Object::Ptr result2 = arr->getObject(1);
 	CPPUNIT_ASSERT_EQUAL(result2->getValue<std::string>("stock_code"), std::string("TXT"));
 	CPPUNIT_ASSERT_EQUAL(result2->getValue<std::string>("quantity"), std::string("-2"));
-	CPPUNIT_ASSERT_EQUAL(result2->getValue<std::string>("price"), std::string("57.94"));
+	CPPUNIT_ASSERT_EQUAL(result2->getValue<std::string>("price"), std::string("-115.88"));
 	CPPUNIT_ASSERT(result2->getValue<std::string>("date") != ""); // FIXME: verify it's a correct date
 	CPPUNIT_ASSERT_EQUAL(result2->getValue<std::string>("status"), std::string("pending"));
 
