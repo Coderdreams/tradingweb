@@ -50,7 +50,7 @@ void RegisterTrader::saveUser(std::string username, std::string password)
     try {
         boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
         boost::scoped_ptr< sql::PreparedStatement> prep_stmt(
-            con->prepareStatement("INSERT INTO user(name, pass) VALUES (?, PASSWORD(?))")
+            con->prepareStatement("INSERT IGNORE INTO user(name, pass) VALUES (?, PASSWORD(?))")
         );
         prep_stmt->setString(1, username);
         prep_stmt->setString(2, password);
