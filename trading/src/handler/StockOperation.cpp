@@ -94,7 +94,7 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         std::string balanceOp = "-";
         if (_operation == SELL) {
             op = "-";
-            balanceOp = "-";
+            balanceOp = "+";
             if (qty > sharesBought) { // Not allowing to sell shares you don't own
                 return false;
             }
