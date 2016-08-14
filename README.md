@@ -4,18 +4,15 @@ Ubuntu 16.04 Xenial 64bit
 
 Tested with gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.1) (check with g++ -v)
 
-$ sudo apt-get install g++ libcppunit-dev mysql-server libmysqlcppconn-dev
+$ sudo apt-get install g++ libcppunit-dev mysql-server libmysqlcppconn-dev premake4
 
-Download and uncompress poco from here: http://pocoproject.org/releases/poco-1.7.4/poco-1.7.4.tar.gz
+# Download and install conan package manager:
 
-# This is a slow step, but the poco libraries on Ubuntu are too old and missing lots of features
+https://s3-eu-west-1.amazonaws.com/conanio-production/downloads/conan-ubuntu-64_0_11_0.deb
 
-$ cd poco-1.7.4
-$ ./configure
-$ make
-$ sudo make install
-# This one is to refresh the library config database for the new installed libraries
-$ sudo ldconfig
+# Build with script:
+
+$ ./build.sh
 
 # Create a mysql user for the app with these commands
 
