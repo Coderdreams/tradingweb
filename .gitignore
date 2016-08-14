@@ -6,3 +6,5 @@ testsuite
 *~
 *.gch
 .vscode
+tradingApp.make
+Makefile
