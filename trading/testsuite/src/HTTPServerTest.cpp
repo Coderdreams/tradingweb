@@ -30,16 +30,9 @@ using Poco::Util::Application;
 using Poco::Logger;
 using namespace std::string_literals;
 
-HTTPServerTest::HTTPServerTest() {
-	std::string name("./tradingApp");
-	Poco::Process::Args args;
-	_ph = std::make_unique<Poco::ProcessHandle>(Poco::Process::launch(name, args));
-	usleep(15000); // FIXME: I have no way of determining that the process is listening on the port yet
-}
+HTTPServerTest::HTTPServerTest() {}
 
-HTTPServerTest::~HTTPServerTest() {
-	Poco::Process::requestTermination(_ph->id()); // Poco should terminate the process alone
-}
+HTTPServerTest::~HTTPServerTest() {}
 
 void HTTPServerTest::setUp() {}
 
