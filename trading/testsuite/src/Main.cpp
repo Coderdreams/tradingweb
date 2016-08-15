@@ -15,7 +15,6 @@ public:
 
 	~TestApplication() {
 		Poco::Process::requestTermination(_ph->id()); // Poco should terminate the process alone
-		std::cout << "destruct" << std::endl;
 	}
 
 	TestApplication() {

@@ -1,1 +1,1 @@
-./recreate_database.sh && make test && ./testsuite
+./recreate_database.sh && make testsuite && ./testsuite
