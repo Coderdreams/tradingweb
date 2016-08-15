@@ -24,3 +24,13 @@ solution "TradingApp"
          defines { "NDEBUG" }
          flags { "Optimize" }
          objdir ("objs")
+
+   project "testsuite"
+      kind "ConsoleApp"
+      language "C++"
+      files { "trading/testsuite/src/**.cpp" }
+      links { "cppunit", conan_libs }
+      configuration "Debug"
+         defines { "DEBUG" }
+         flags { "Symbols" }
+         objdir ("objs")

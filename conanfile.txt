@@ -1,12 +1,10 @@
 [requires]
 Poco/1.7.3@lasote/stable
+PremakeGen@0.1@memsharded/testing
 
 [generators]
 Premake
 
 [options]
-Poco:shared=True
-OpenSSL:shared=True
-
-[imports]
-bin, *.so -> ./bin # Copies all dll files from the package "bin" folder to my project "bin" folder
+Poco:shared=False
+OpenSSL:shared=False

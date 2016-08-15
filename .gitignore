@@ -7,4 +7,5 @@ testsuite
 *.gch
 .vscode
 tradingApp.make
+testsuite.make
 Makefile
