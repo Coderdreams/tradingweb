@@ -6,5 +6,9 @@ PremakeGen@0.1@memsharded/testing
 Premake
 
 [options]
-Poco:shared=False
-OpenSSL:shared=False
+Poco:shared=True
+OpenSSL:shared=True
+
+[imports]
+lib, *.so* -> ./bin
+

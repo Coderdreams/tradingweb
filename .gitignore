@@ -9,3 +9,7 @@ testsuite
 tradingApp.make
 testsuite.make
 Makefile
+bin/*
+conaninfo.txt
+conanpremake.lua
+
