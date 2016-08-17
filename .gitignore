@@ -10,6 +10,7 @@ tradingApp.make
 testsuite.make
 Makefile
 bin/*
+lib/*
 conaninfo.txt
 conanpremake.lua
 
