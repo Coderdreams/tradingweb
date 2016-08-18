@@ -4,7 +4,7 @@ Ubuntu 16.04 Xenial 64bit
 
 Tested with gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.1) (check with g++ -v)
 
-$ sudo apt-get install g++ libcppunit-dev mysql-server libmysqlcppconn-dev premake4
+$ sudo apt-get install g++ mysql-server libmysqlcppconn-dev premake4
 
 # Download and install conan package manager:
 
