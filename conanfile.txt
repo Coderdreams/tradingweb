@@ -9,6 +9,7 @@ Premake
 [options]
 Poco:shared=True
 OpenSSL:shared=True
+Poco:enable_data_mysql=True
 
 [imports]
 lib, *.so* -> ./lib
