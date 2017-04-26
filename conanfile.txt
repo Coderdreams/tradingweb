@@ -5,6 +5,7 @@ cppunit/0.1@Coderdreams/testing
 
 [generators]
 Premake
+virtualrunenv
 
 [options]
 Poco:shared=True

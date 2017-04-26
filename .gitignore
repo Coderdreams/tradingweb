@@ -13,4 +13,5 @@ bin/*
 lib/*
 conaninfo.txt
 conanpremake.lua
-
+activate_run.sh
+deactivate_run.sh

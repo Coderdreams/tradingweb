@@ -14,6 +14,10 @@ https://github.com/conan-io/conan/releases/download/0.22.2/conan-ubuntu-64_0_22_
 
 $ ./build.sh
 
+# Activate the conan deps for the app to find it's compiled .so's
+
+$ source activate_run.sh
+
 # Create a mysql user for the app with these commands
 
 $ mysql -uroot -p # credentials are specific to your server 
