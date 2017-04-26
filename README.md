@@ -8,7 +8,7 @@ $ sudo apt-get install g++ mysql-server libmysqlcppconn-dev premake4
 
 # Download and install conan package manager:
 
-https://s3-eu-west-1.amazonaws.com/conanio-production/downloads/conan-ubuntu-64_0_11_0.deb
+https://github.com/conan-io/conan/releases/download/0.22.2/conan-ubuntu-64_0_22_2.deb
 
 # Build with script:
 
