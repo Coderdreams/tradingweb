@@ -1,5 +1,5 @@
 [requires]
-Poco/1.7.3@lasote/stable
+Poco/1.7.5@lasote/stable
 PremakeGen@0.1@memsharded/testing
 cppunit/0.1@Coderdreams/testing
 
