@@ -13,7 +13,7 @@ bool UserAuthentication::isAuthorizedUser(Poco::Net::HTTPServerRequest& request)
         const std::string& user = cred.getUsername(); 
         const std::string& pwd = cred.getPassword();
 
-        boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
+        auto con = trading::MySQLConnection::connect();
         boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
                 con->prepareStatement("SELECT id FROM user WHERE name = ? AND pass = PASSWORD(?)")
         );

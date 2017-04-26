@@ -28,7 +28,7 @@ solution "TradingApp"
    project "testsuite"
       kind "ConsoleApp"
       language "C++"
-      files { "trading/testsuite/src/**.cpp" }
+      files { "trading/testsuite/src/**.cpp", "trading/src/MySQLConnection.cpp" }
       links { "cppunit", conan_libs }
       configuration "Debug"
          defines { "DEBUG" }

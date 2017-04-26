@@ -39,7 +39,7 @@ void Transactions::handleRequest(HTTPServerRequest& request,
 std::string Transactions::get(std::string const& user) 
 {
     try {
-        boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
+        auto con = trading::MySQLConnection::connect();
         boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
             con->prepareStatement(std::string("SELECT stock.code as stockCode, quantity, FORMAT(price*quantity, 2) AS price, dateOfTransaction, status FROM transaction ") +
                 " LEFT JOIN user ON (transaction.userId = user.id) " +

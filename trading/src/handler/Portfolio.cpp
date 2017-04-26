@@ -39,7 +39,7 @@ void Portfolio::handleRequest(HTTPServerRequest& request,
 std::string Portfolio::get(std::string const& user) 
 {
     try {
-        boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
+        auto con = trading::MySQLConnection::connect();
         boost::scoped_ptr<sql::PreparedStatement> user_stmt(
             con->prepareStatement("SELECT id AS userId, FORMAT(balancecash, 2) AS balanceCash FROM user WHERE name = ?")
         );

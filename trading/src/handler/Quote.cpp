@@ -38,7 +38,7 @@ void Quote::handleRequest(HTTPServerRequest& request,
 bool Quote::stockExists(std::string stockCode) 
 {
     try {
-        boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
+        auto con = trading::MySQLConnection::connect();
         boost::scoped_ptr< sql::PreparedStatement> prep_stmt(
             con->prepareStatement("SELECT id FROM stock WHERE code = ?")
         );
@@ -62,7 +62,7 @@ bool Quote::stockExists(std::string stockCode)
 float Quote::getQuote(std::string stockCode) 
 {
     try {
-        boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
+        auto con = trading::MySQLConnection::connect();
         boost::scoped_ptr< sql::PreparedStatement> prep_stmt(
             con->prepareStatement("SELECT lastSalePrice FROM stock WHERE code = ?")
         );

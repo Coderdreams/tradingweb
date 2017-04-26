@@ -53,7 +53,7 @@ void StockOperation::handleRequest(HTTPServerRequest& request,
 bool StockOperation::operate(std::string const& stockCode, std::string const& quantity, std::string const& user) 
 {
     try {
-        boost::scoped_ptr<sql::Connection> con(trading::MySQLConnection::connect());
+        auto con = trading::MySQLConnection::connect();
         boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
             con->prepareStatement("SELECT id AS userId, balancecash AS balanceCash FROM user WHERE name = ?")
         );
