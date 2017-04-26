@@ -14,7 +14,7 @@ https://github.com/conan-io/conan/releases/download/0.22.2/conan-ubuntu-64_0_22_
 
 $ ./build.sh
 
-# Activate the conan deps for the app to find its compiled .so's
+# Activate the conan deps for the app to find its compiled .so's at runtime
 
 $ source activate_run.sh
 
