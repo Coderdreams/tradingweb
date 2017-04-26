@@ -13,8 +13,9 @@ private:
 
 public:
 
-	~TestApplication() {
+	virtual ~TestApplication() {
 		Poco::Process::requestTermination(_ph->id()); // Poco should terminate the process alone
+		std::cout << "Cleaning up and finishing" << std::endl;
 	}
 
 	TestApplication() {
@@ -34,6 +35,6 @@ protected:
     }
 };
 
-}
+} // namespace: trading
 
 POCO_APP_MAIN(trading::TestApplication);
