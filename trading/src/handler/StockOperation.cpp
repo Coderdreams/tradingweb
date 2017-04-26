@@ -27,26 +27,27 @@ void StockOperation::handleRequest(HTTPServerRequest& request,
     app.logger().information(std::string("Request ") + _operation + std::string(" from ")
         + request.clientAddress().toString());
 
-    if (!request.hasCredentials()) 
+    if (!request.hasCredentials() || !UserAuthentication::isAuthorizedUser(request)) 
     {
         response.redirect("/");
-    } else if (UserAuthentication::isAuthorizedUser(request)) {
-        Poco::Net::HTMLForm form(request, request.stream());
-        if (!form.empty()) {
-            if (form.has("code") && form.has("quantity")) {
-                Poco::Net::HTTPBasicCredentials cred(request);
-                const std::string& user = cred.getUsername(); 
-                bool success = operate(form["code"], form["quantity"], user);
-                response.setContentType("application/json");
-                std::string responseStr(std::string("{\"success\": ") + (success ? "true" : "false") + "}");
-                response.sendBuffer(responseStr.data(), responseStr.length());
-                return;
-            }
-        }
-        response.setContentType("application/json");
-        std::string responseStr("{\"success\": false}");
-        response.sendBuffer(responseStr.data(), responseStr.length());
+        return;
     }
+
+    Poco::Net::HTMLForm form(request, request.stream());
+    if (!form.empty()) {
+        if (form.has("code") && form.has("quantity")) {
+            Poco::Net::HTTPBasicCredentials cred(request);
+            const std::string& user = cred.getUsername(); 
+            bool success = operate(form["code"], form["quantity"], user);
+            response.setContentType("application/json");
+            std::string responseStr(std::string("{\"success\": ") + (success ? "true" : "false") + "}");
+            response.sendBuffer(responseStr.data(), responseStr.length());
+            return;
+        }
+    }
+    response.setContentType("application/json");
+    std::string responseStr("{\"success\": false}");
+    response.sendBuffer(responseStr.data(), responseStr.length());
 }
 
 bool StockOperation::operate(std::string const& stockCode, std::string const& quantity, std::string const& user) 
