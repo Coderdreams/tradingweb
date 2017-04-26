@@ -22,18 +22,18 @@ void Portfolio::handleRequest(HTTPServerRequest& request,
     app.logger().information("Request portfolio from "
         + request.clientAddress().toString());
 
-    if (!request.hasCredentials()) 
+    if (!request.hasCredentials() || !UserAuthentication::isAuthorizedUser(request)) 
     {
         response.redirect("/");
-    } else if (UserAuthentication::isAuthorizedUser(request)) {
-        Poco::Net::HTTPBasicCredentials cred(request);
-        const std::string& user = cred.getUsername(); 
-        std::string jsonString(get(user));
-        response.setContentType("application/json");
-        std::string responseStr("{\"success\": true, \"results\": " + jsonString + "}");
-        response.sendBuffer(responseStr.data(), responseStr.length());
         return;
     }
+    
+    Poco::Net::HTTPBasicCredentials cred(request);
+    const std::string& user = cred.getUsername(); 
+    std::string jsonString(get(user));
+    response.setContentType("application/json");
+    std::string responseStr("{\"success\": true, \"results\": " + jsonString + "}");
+    response.sendBuffer(responseStr.data(), responseStr.length());
 }
 
 std::string Portfolio::get(std::string const& user) 
