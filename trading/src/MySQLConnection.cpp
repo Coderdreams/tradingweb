@@ -7,13 +7,7 @@ sql::Connection* MySQLConnection::connect() {
     if (!con) {
         _connect();
     }
-    return con;
-}
-
-MySQLConnection::~MySQLConnection() {
-    if (con) {
-        delete con;
-    }
+    return con.get();
 }
 
 void MySQLConnection::_connect() {
@@ -34,7 +28,7 @@ void MySQLConnection::_connect() {
         throw "Couldn\'t open configuration file for reading'";
     }
     try {
-        con = driver->connect(config.getString("host"), config.getString("user"), config.getString("password"));
+        con = std::unique_ptr<sql::Connection>(driver->connect(config.getString("host"), config.getString("user"), config.getString("password")));
         con->setSchema(config.getString("database"));
     }  catch (sql::SQLException &e) {
         std::cout << "# ERR: SQLException connecting to database in " << __FILE__;
@@ -45,6 +39,6 @@ void MySQLConnection::_connect() {
     }
 }
 
-sql::Connection* MySQLConnection::con;
+std::unique_ptr<sql::Connection> MySQLConnection::con;
 
 } // namespace trading

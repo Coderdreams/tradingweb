@@ -11,15 +11,15 @@
 #include <cppconn/statement.h>
 #include <cppconn/prepared_statement.h>
 #include <fstream>
+#include <memory>
 
 namespace trading {
 
 class MySQLConnection {
-    static sql::Connection* con;
+    static std::unique_ptr<sql::Connection> con;
     static void _connect();
 
 public:
-    ~MySQLConnection();
     static sql::Connection* connect();
 
 };
