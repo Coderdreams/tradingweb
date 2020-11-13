@@ -8,7 +8,7 @@ solution "TradingApp"
    libdirs { conan_libdirs }
    links { "mysqlcppconn", conan_libs }
    configuration { "linux", "gmake" }
-      buildoptions { "-Wall", "-std=c++2a"}
+      buildoptions { "-Wall", "-std=c++2a" }
    -- A project defines one build target
    project "tradingApp"
       kind "ConsoleApp"
@@ -29,7 +29,7 @@ solution "TradingApp"
       kind "ConsoleApp"
       language "C++"
       files { "trading/testsuite/src/**.cpp", "trading/src/MySQLConnection.cpp" }
-      links { "cppunit", conan_libs }
+      links { "cppunit", "pthread", conan_libs }
       configuration "Debug"
          defines { "DEBUG" }
          flags { "Symbols" }
