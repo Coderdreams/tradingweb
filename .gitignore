@@ -16,3 +16,5 @@ conanpremake.lua
 activate_run.sh
 deactivate_run.sh
 conan_imports_manifest.txt
+conanbuildinfo*
+graph_info.json
