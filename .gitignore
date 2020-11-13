@@ -13,8 +13,10 @@ bin/*
 lib/*
 conaninfo.txt
 conanpremake.lua
-activate_run.sh
-deactivate_run.sh
+activate_run.*
+deactivate_run.*
+environment_run.*
+conan.lock
 conan_imports_manifest.txt
 conanbuildinfo*
 graph_info.json
