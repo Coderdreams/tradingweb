@@ -1,14 +1,18 @@
 # Dependencies
 
-Ubuntu 16.04 Xenial 64bit
+Ubuntu 20.04 Xenial 64bit
 
-Tested with gcc version 5.4.0 20160609 (Ubuntu 5.4.0-6ubuntu1~16.04.1) (check with g++ -v)
+Tested with gcc version 9.3.0 (Ubuntu 9.3.0-17ubuntu1~20.04) (check with g++ -v).
 
-$ sudo apt-get install g++ mysql-server libmysqlcppconn-dev premake4
+$ sudo apt-get install g++ mysql-server libmysqlcppconn-dev
+
+# Download premake5 and install it somewhere in your PATH locations:
+
+https://premake.github.io/download.html#v5
 
 # Download and install conan package manager:
 
-https://github.com/conan-io/conan/releases/download/0.22.2/conan-ubuntu-64_0_22_2.deb
+https://github.com/conan-io/conan/releases/tag/1.31.2
 
 # Build with script:
 
@@ -20,7 +24,7 @@ $ source activate_run.sh
 
 # Create a mysql user for the app with these commands
 
-$ mysql -uroot -p # credentials are specific to your server 
+$ mysql -uroot -p # credentials are specific to your server
 
 # On mysql's prompt copy and paste these:
 
@@ -34,7 +38,7 @@ If the credentials need to be different change them here, and edit database_conf
 
 $ mysql -utradingop -pconnecttrade tradingapp < database/schema.sql
 $ ./get_stock_data.sh | mysql -utradingop -pconnecttrade tradingapp
- 
+
 # To run tests (BEWARE, they DROP the database for cleanup)
 
 $ ./run_tests.sh

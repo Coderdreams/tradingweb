@@ -1,16 +1,15 @@
 [requires]
-Poco/1.7.5@lasote/stable
-PremakeGen@0.1@memsharded/testing
-cppunit/0.1@Coderdreams/testing
+Poco/1.10.1@pocoproject/stable
+cppunit/1.15.1
 
 [generators]
-Premake
+premake
 virtualrunenv
 
 [options]
 Poco:shared=True
 OpenSSL:shared=True
-Poco:enable_data_mysql=True
+#Poco:enable_data_mysql=True
 
 [imports]
 lib, *.so* -> ./lib
