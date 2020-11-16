@@ -1,8 +1,6 @@
 *.o
 *.plist
 objs
-tradingApp
-testsuite
 *~
 *.gch
 .vscode
@@ -11,6 +9,8 @@ testsuite.make
 Makefile
 bin/*
 lib/*
+build/*
+.idea/*
 conaninfo.txt
 conanpremake.lua
 activate_run.*
@@ -20,3 +20,5 @@ conan.lock
 conan_imports_manifest.txt
 conanbuildinfo*
 graph_info.json
+CMakeLists.txt.user
+compile_flags.txt
