@@ -22,8 +22,9 @@ public:
 	void testTransactions();
 	void setUp();
 	void tearDown();
-
 	static CppUnit::Test* suite();
+private:
+	bool assertJsonValuesAreEqual(std::string, std::string);
 
 };
 

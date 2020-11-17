@@ -12,6 +12,7 @@
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Util/Application.h>
 #include <Poco/Util/LoggingSubsystem.h>
+#include <Poco/JSON/Stringifier.h>
 #include <Poco/JSON/Parser.h>
 #include <Poco/JSON/ParseHandler.h>
 #include <Poco/JSON/JSONException.h>
@@ -47,22 +48,30 @@ void HTTPServerTest::testThrowsErrorOnInvalidRequest()
 	HTTPRequest request("POST", "/registerTrader");
 	request.setContentLength((int) body.length());
 	request.setContentType("text/plain");
-	cs.sendRequest(request) << body;
+	std::ostream& rs = cs.sendRequest(request);
+	std::istringstream is(body);
+	Poco::StreamCopier::copyStream(is, rs);
 
-	char expectedBody[] = "{\"success\": false}";
+	std::string expectedBody = "{\"success\": false}";
 	HTTPResponse response;
-	
-	std::istream& is = cs.receiveResponse(response);
-	//cs.receiveResponse(response) >> rbody; // FIXME: this doesn't work and I had to resort to c chars, maybe a bug in POCO
+	std::string rbody;
 
-	unsigned int contentLength = response.getContentLength();
-	char rbody[500];
-	is.read(rbody, contentLength);
-	rbody[contentLength] = '\0';
+	Poco::StreamCopier::copyToString(cs.receiveResponse(response), rbody);
+	CPPUNIT_ASSERT_EQUAL((long) expectedBody.size(), response.getContentLength());
+	CPPUNIT_ASSERT_EQUAL("application/json"s, response.getContentType());
+	assertJsonValuesAreEqual(expectedBody, rbody);
+}
 
-	CPPUNIT_ASSERT(response.getContentLength() == (int) strlen(expectedBody));
-	CPPUNIT_ASSERT_EQUAL(response.getContentType(), "application/json"s);
-	CPPUNIT_ASSERT_EQUAL(strcmp(expectedBody, rbody), 0);
+bool HTTPServerTest::assertJsonValuesAreEqual(std::string expected, std::string actual) {
+	Poco::JSON::Parser parser;
+	Poco::JSON::Parser parser2;
+	Poco::Dynamic::Var expectedJson = parser.parse(expected);
+	Poco::Dynamic::Var actualJson = parser2.parse(actual);
+	std::stringstream condensedExpectedStr;
+	std::stringstream condensedActualStr;
+	Poco::JSON::Stringifier::condense(expectedJson, condensedExpectedStr);
+	Poco::JSON::Stringifier::condense(actualJson, condensedActualStr);
+	CPPUNIT_ASSERT_EQUAL(condensedExpectedStr.str(), condensedActualStr.str());
 }
 
 void HTTPServerTest::testSavesTrader()
