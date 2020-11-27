@@ -270,7 +270,8 @@ void HTTPServerTest::testTransactions()
 	
 	Poco::Dynamic::Var results = object->get("results");
 	Poco::JSON::Array::Ptr arr = results.extract<Poco::JSON::Array::Ptr>();
-	CPPUNIT_ASSERT_EQUAL((int) arr->size(), 2);
+	std::cout << arr->size() << std::endl;
+	CPPUNIT_ASSERT_EQUAL(2, (int) arr->size());
 
 	Poco::JSON::Object::Ptr result1 = arr->getObject(0);
 	CPPUNIT_ASSERT_EQUAL(result1->getValue<std::string>("stock_code"), std::string("TXT"));
