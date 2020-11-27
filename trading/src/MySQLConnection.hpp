@@ -16,12 +16,9 @@
 namespace trading {
 
 class MySQLConnection {
-    static std::unique_ptr<sql::Connection> con;
-    static void _connect();
 
 public:
-    static sql::Connection* connect();
-
+    static std::unique_ptr<sql::Connection> connect();
 };
 
 } // namespace trading
