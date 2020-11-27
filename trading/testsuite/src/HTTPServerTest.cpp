@@ -84,15 +84,15 @@ void HTTPServerTest::testSavesTrader()
 	HTTPRequest request(HTTPRequest::HTTP_POST, "/registerTrader");
 
 	Poco::Net::HTMLForm form;
-	form.add("username", "testtrader"); 
+	form.add("username", "testtrader");
 	form.add("pass", "test123");
-	form.prepareSubmit(request); 
+	form.prepareSubmit(request);
 	request.setContentType("application/json");
 	form.write(cs.sendRequest(request));
 
 	char expectedBody[] = "{\"success\": true}";
 	HTTPResponse response;
-	
+
 	std::istream& is = cs.receiveResponse(response);
 
 	unsigned int contentLength = response.getContentLength();
@@ -126,14 +126,14 @@ void HTTPServerTest::testGetQuote()
 	HTTPRequest request(HTTPRequest::HTTP_POST, "/quote");
 
 	Poco::Net::HTMLForm form;
-	form.add("stockCode", "TXT"); 
-	form.prepareSubmit(request); 
+	form.add("stockCode", "TXT");
+	form.prepareSubmit(request);
 	request.setContentType("application/json");
 	form.write(cs.sendRequest(request));
 
 	char expectedBody[] = "{\"success\": true, \"quote\": 57.939999}";
 	HTTPResponse response;
-	
+
 	std::istream& is = cs.receiveResponse(response);
 
 	unsigned int contentLength = response.getContentLength();
@@ -159,7 +159,7 @@ void HTTPServerTest::testBuyUnauthorized()
 	Poco::Net::HTMLForm form;
 	form.add("code", "TXT");
 	form.add("quantity", "10");
-	form.prepareSubmit(request); 
+	form.prepareSubmit(request);
 	request.setContentType("application/json");
 	form.write(cs.sendRequest(request));
 
@@ -185,20 +185,20 @@ void HTTPServerTest::testBuy()
 	Poco::Net::HTMLForm form;
 	form.add("code", "TXT");
 	form.add("quantity", "10");
-	form.prepareSubmit(request); 
+	form.prepareSubmit(request);
 	request.setContentType("application/json");
 	form.write(cs.sendRequest(request));
 
 	char expectedBody[] = "{\"success\": true}";
 	HTTPResponse response;
-	
+
 	std::istream& is = cs.receiveResponse(response);
 
 	unsigned int contentLength = response.getContentLength();
 	char rbody[500];
 	is.read(rbody, contentLength);
 	rbody[contentLength] = '\0';
-	
+
 	int expectedBodyLength = (int) strlen(expectedBody);
 	int responseLength = (int) response.getContentLength();
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(rbody, responseLength, expectedBodyLength);
@@ -219,20 +219,20 @@ void HTTPServerTest::testSell()
 	Poco::Net::HTMLForm form;
 	form.add("code", "TXT");
 	form.add("quantity", "2");
-	form.prepareSubmit(request); 
+	form.prepareSubmit(request);
 	request.setContentType("application/json");
 	form.write(cs.sendRequest(request));
 
 	char expectedBody[] = "{\"success\": true}";
 	HTTPResponse response;
-	
+
 	std::istream& is = cs.receiveResponse(response);
 
 	unsigned int contentLength = response.getContentLength();
 	char rbody[500];
 	is.read(rbody, contentLength);
 	rbody[contentLength] = '\0';
-	
+
 	int expectedBodyLength = (int) strlen(expectedBody);
 	int responseLength = (int) response.getContentLength();
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(rbody, responseLength, expectedBodyLength);
@@ -267,7 +267,7 @@ void HTTPServerTest::testTransactions()
 	Poco::Dynamic::Var success = object->get("success");
 	std::string value = success.convert<std::string>();
 	CPPUNIT_ASSERT_EQUAL(value, std::string("true"));
-	
+
 	Poco::Dynamic::Var results = object->get("results");
 	Poco::JSON::Array::Ptr arr = results.extract<Poco::JSON::Array::Ptr>();
 	std::cout << arr->size() << std::endl;
@@ -318,7 +318,7 @@ void HTTPServerTest::testPortfolio()
 	Poco::Dynamic::Var success = object->get("success");
 	std::string value = success.convert<std::string>();
 	CPPUNIT_ASSERT_EQUAL(value, std::string("true"));
-	
+
 	Poco::Dynamic::Var results = object->get("results");
 	Poco::JSON::Array::Ptr arr = results.extract<Poco::JSON::Array::Ptr>();
 	CPPUNIT_ASSERT_EQUAL((int) arr->size(), 1);
