@@ -127,21 +127,16 @@ void HTTPServerTest::testGetQuote()
 	request.setContentType("application/json");
 	form.write(cs.sendRequest(request));
 
-	char expectedBody[] = "{\"success\": true, \"quote\": 57.939999}";
+	std::string expectedBody = "{\"success\": true, \"quote\": 57.939999}";
 	HTTPResponse response;
+	std::string rbody;
+	Poco::StreamCopier::copyToString(cs.receiveResponse(response), rbody);
 
-	std::istream& is = cs.receiveResponse(response);
-
-	unsigned int contentLength = response.getContentLength();
-	char rbody[500];
-	is.read(rbody, contentLength);
-	rbody[contentLength] = '\0';
-
-	int expectedBodyLength = (int) strlen(expectedBody);
+	int expectedBodyLength = expectedBody.size();
 	int responseLength = (int) response.getContentLength();
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(rbody, responseLength, expectedBodyLength);
 	CPPUNIT_ASSERT_EQUAL(response.getContentType(), "application/json"s);
-	CPPUNIT_ASSERT_EQUAL(strcmp(expectedBody, rbody), 0);
+	assertJsonValuesAreEqual(expectedBody, rbody);
 }
 
 void HTTPServerTest::testBuyUnauthorized()
@@ -185,21 +180,16 @@ void HTTPServerTest::testBuy()
 	request.setContentType("application/json");
 	form.write(cs.sendRequest(request));
 
-	char expectedBody[] = "{\"success\": true}";
+	std::string expectedBody = "{\"success\": true}";
 	HTTPResponse response;
+	std::string rbody;
+	Poco::StreamCopier::copyToString(cs.receiveResponse(response), rbody);
 
-	std::istream& is = cs.receiveResponse(response);
-
-	unsigned int contentLength = response.getContentLength();
-	char rbody[500];
-	is.read(rbody, contentLength);
-	rbody[contentLength] = '\0';
-
-	int expectedBodyLength = (int) strlen(expectedBody);
+	int expectedBodyLength = expectedBody.size();
 	int responseLength = (int) response.getContentLength();
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(rbody, responseLength, expectedBodyLength);
 	CPPUNIT_ASSERT_EQUAL(response.getContentType(), "application/json"s);
-	CPPUNIT_ASSERT_EQUAL(strcmp(expectedBody, rbody), 0);
+	assertJsonValuesAreEqual(expectedBody, rbody);
 }
 
 void HTTPServerTest::testSell()
@@ -219,21 +209,16 @@ void HTTPServerTest::testSell()
 	request.setContentType("application/json");
 	form.write(cs.sendRequest(request));
 
-	char expectedBody[] = "{\"success\": true}";
+	std::string expectedBody = "{\"success\": true}";
 	HTTPResponse response;
+	std::string rbody;
+	Poco::StreamCopier::copyToString(cs.receiveResponse(response), rbody);
 
-	std::istream& is = cs.receiveResponse(response);
-
-	unsigned int contentLength = response.getContentLength();
-	char rbody[500];
-	is.read(rbody, contentLength);
-	rbody[contentLength] = '\0';
-
-	int expectedBodyLength = (int) strlen(expectedBody);
+	int expectedBodyLength = expectedBody.size();
 	int responseLength = (int) response.getContentLength();
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(rbody, responseLength, expectedBodyLength);
 	CPPUNIT_ASSERT_EQUAL(response.getContentType(), "application/json"s);
-	CPPUNIT_ASSERT_EQUAL(strcmp(expectedBody, rbody), 0);
+	assertJsonValuesAreEqual(expectedBody, rbody);
 }
 
 void HTTPServerTest::testTransactions()
@@ -249,13 +234,8 @@ void HTTPServerTest::testTransactions()
 	cs.sendRequest(request);
 
 	HTTPResponse response;
-
-	std::istream& is = cs.receiveResponse(response);
-
-	unsigned int contentLength = response.getContentLength();
-	char rbody[500];
-	is.read(rbody, contentLength);
-	rbody[contentLength] = '\0';
+	std::string rbody;
+	Poco::StreamCopier::copyToString(cs.receiveResponse(response), rbody);
 
 	Poco::JSON::Parser parser;
 	Poco::Dynamic::Var result = parser.parse(rbody);
@@ -300,13 +280,8 @@ void HTTPServerTest::testPortfolio()
 	cs.sendRequest(request);
 
 	HTTPResponse response;
-
-	std::istream& is = cs.receiveResponse(response);
-
-	unsigned int contentLength = response.getContentLength();
-	char rbody[500];
-	is.read(rbody, contentLength);
-	rbody[contentLength] = '\0';
+	std::string rbody;
+	Poco::StreamCopier::copyToString(cs.receiveResponse(response), rbody);
 
 	Poco::JSON::Parser parser;
 	Poco::Dynamic::Var result = parser.parse(rbody);
