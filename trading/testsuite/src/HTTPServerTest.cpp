@@ -90,15 +90,10 @@ void HTTPServerTest::testSavesTrader()
 	request.setContentType("application/json");
 	form.write(cs.sendRequest(request));
 
-	char expectedBody[] = "{\"success\": true}";
+	std::string expectedBody = "{\"success\": true}";
 	HTTPResponse response;
-
-	std::istream& is = cs.receiveResponse(response);
-
-	unsigned int contentLength = response.getContentLength();
-	char rbody[500];
-	is.read(rbody, contentLength);
-	rbody[contentLength] = '\0';
+	std::string rbody;
+	Poco::StreamCopier::copyToString(cs.receiveResponse(response), rbody);
 
 	auto con = trading::MySQLConnection::connect();
 	boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
@@ -111,11 +106,12 @@ void HTTPServerTest::testSavesTrader()
 		id = res->getInt("id");
 	}
 	CPPUNIT_ASSERT(id > 0);
-	int expectedBodyLength = (int) strlen(expectedBody);
+	int expectedBodyLength = expectedBody.size();
 	int responseLength = (int) response.getContentLength();
+
 	CPPUNIT_ASSERT_EQUAL_MESSAGE(rbody, responseLength, expectedBodyLength);
 	CPPUNIT_ASSERT_EQUAL(response.getContentType(), "application/json"s);
-	CPPUNIT_ASSERT_EQUAL(strcmp(expectedBody, rbody), 0);
+	assertJsonValuesAreEqual(expectedBody, rbody);
 }
 
 void HTTPServerTest::testGetQuote()
