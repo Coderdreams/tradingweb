@@ -23,3 +23,9 @@ add_executable(testsuite "")
 add_subdirectory(trading/src)
 
 add_subdirectory(trading/testsuite/src)
+
+include(CheckIPOSupported)
+check_ipo_supported(RESULT result)
+if(result)
+  set_target_properties(tradingApp PROPERTIES INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
