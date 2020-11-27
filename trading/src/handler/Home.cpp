@@ -1,5 +1,5 @@
 
-#include "handler/Home.hpp"
+#include "Home.hpp"
 #include "UserAuthentication.hpp"
 
 #include <Poco/Util/Application.h>
@@ -22,9 +22,9 @@ void Home::handleRequest(HTTPServerRequest& request,
     app.logger().information("Request home from "
         + request.clientAddress().toString());
 
-    if(!request.hasCredentials()) 
-    { 
-        std::string templateFilePath(app.config().getString("application.dir") + "templates/welcome_no_credentials.html");
+    if(!request.hasCredentials())
+    {
+        std::string templateFilePath(app.config().getString("application.dir") + "../../templates/welcome_no_credentials.html");
         response.sendFile(templateFilePath, "text/html");
     } else if (UserAuthentication::isAuthorizedUser(request)) {
     	response.redirect("/dashboard");

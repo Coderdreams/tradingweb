@@ -1,5 +1,5 @@
 
-#include "handler/Transactions.hpp"
+#include "Transactions.hpp"
 #include "MySQLConnection.hpp"
 #include "UserAuthentication.hpp"
 
@@ -22,25 +22,26 @@ void Transactions::handleRequest(HTTPServerRequest& request,
     app.logger().information("Request transactions from "
         + request.clientAddress().toString());
 
-    if (!request.hasCredentials() || !UserAuthentication::isAuthorizedUser(request)) 
+    if (!request.hasCredentials() || !UserAuthentication::isAuthorizedUser(request))
     {
         response.redirect("/");
         return;
     }
 
     Poco::Net::HTTPBasicCredentials cred(request);
-    const std::string& user = cred.getUsername(); 
+    const std::string& user = cred.getUsername();
     std::string jsonString(get(user));
     response.setContentType("application/json");
     std::string responseStr("{\"success\": true, \"results\": " + jsonString + "}");
     response.sendBuffer(responseStr.data(), responseStr.length());
 }
 
-std::string Transactions::get(std::string const& user) 
+std::string Transactions::get(std::string const& user)
 {
+    Application& app = Application::instance();
     try {
         auto con = trading::MySQLConnection::connect();
-        boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
+        std::unique_ptr<sql::PreparedStatement> prep_stmt(
             con->prepareStatement(std::string("SELECT stock.code as stockCode, quantity, FORMAT(price*quantity, 2) AS price, dateOfTransaction, status FROM transaction ") +
                 " LEFT JOIN user ON (transaction.userId = user.id) " +
                 " LEFT JOIN stock ON (transaction.stockId = stock.id) " +
@@ -48,7 +49,7 @@ std::string Transactions::get(std::string const& user)
             )
         );
         prep_stmt->setString(1, user);
-        boost::scoped_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
+        std::unique_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
         std::string strJson;
         while (res->next()) {
             strJson += std::string("{\"stock_code\": \"") + res->getString("stockCode") + "\",";
@@ -61,12 +62,12 @@ std::string Transactions::get(std::string const& user)
             }
         }
         return std::string("[" + strJson + "]");
-    } catch (sql::SQLException &e) {
-        std::cout << "# ERR: SQLException in " << __FILE__;
-        std::cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
-        std::cout << "# ERR: " << e.what();
-        std::cout << " (MySQL error code: " << e.getErrorCode();
-        exit(1);
+    } catch (const sql::SQLException &ex) {
+            app.logger().error(std::string("# ERR: SQLException with database in ") + __FILE__);
+            app.logger().error(std::string("(") + __FUNCTION__ + ") on line " + std::to_string(__LINE__));
+            app.logger().error(std::string("# ERR: ") + ex.what());
+            app.logger().error(std::string(" (MySQL error code: ") + std::to_string(ex.getErrorCode()));
+        throw ex;
     }
     return "[]";
 }

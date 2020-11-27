@@ -1,5 +1,5 @@
 
-#include "handler/StockOperation.hpp"
+#include "StockOperation.hpp"
 #include "MySQLConnection.hpp"
 #include "UserAuthentication.hpp"
 
@@ -27,7 +27,7 @@ void StockOperation::handleRequest(HTTPServerRequest& request,
     app.logger().information(std::string("Request ") + _operation + std::string(" from ")
         + request.clientAddress().toString());
 
-    if (!request.hasCredentials() || !UserAuthentication::isAuthorizedUser(request)) 
+    if (!request.hasCredentials() || !UserAuthentication::isAuthorizedUser(request))
     {
         response.redirect("/");
         return;
@@ -37,7 +37,7 @@ void StockOperation::handleRequest(HTTPServerRequest& request,
     if (!form.empty()) {
         if (form.has("code") && form.has("quantity")) {
             Poco::Net::HTTPBasicCredentials cred(request);
-            const std::string& user = cred.getUsername(); 
+            const std::string& user = cred.getUsername();
             bool success = operate(form["code"], form["quantity"], user);
             response.setContentType("application/json");
             std::string responseStr(std::string("{\"success\": ") + (success ? "true" : "false") + "}");
@@ -50,15 +50,16 @@ void StockOperation::handleRequest(HTTPServerRequest& request,
     response.sendBuffer(responseStr.data(), responseStr.length());
 }
 
-bool StockOperation::operate(std::string const& stockCode, std::string const& quantity, std::string const& user) 
+bool StockOperation::operate(std::string const& stockCode, std::string const& quantity, std::string const& user)
 {
+    Application& app = Application::instance();
     try {
         auto con = trading::MySQLConnection::connect();
-        boost::scoped_ptr<sql::PreparedStatement> prep_stmt(
+        std::unique_ptr<sql::PreparedStatement> prep_stmt(
             con->prepareStatement("SELECT id AS userId, balancecash AS balanceCash FROM user WHERE name = ?")
         );
         prep_stmt->setString(1, user);
-        boost::scoped_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
+        std::unique_ptr<sql::ResultSet> res(prep_stmt->executeQuery());
         int userId = 0;
         float balanceCash = 0;
         while (res->next()) {
@@ -68,7 +69,7 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         if (userId == 0) {
             return false;
         }
-        boost::scoped_ptr<sql::PreparedStatement> stock_stmt(
+        std::unique_ptr<sql::PreparedStatement> stock_stmt(
             con->prepareStatement("SELECT stock.id AS stockId, lastSalePrice, COALESCE(portfolio.quantity, 0) AS sharesBought \
                 FROM stock \
                 LEFT JOIN portfolio ON (portfolio.stockId = stock.id AND portfolio.userId = ?) \
@@ -77,7 +78,7 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         );
         stock_stmt->setInt(1, userId);
         stock_stmt->setString(2, stockCode);
-        boost::scoped_ptr<sql::ResultSet> res_stock(stock_stmt->executeQuery());
+        std::unique_ptr<sql::ResultSet> res_stock(stock_stmt->executeQuery());
         float lastSalePrice = 0;
         int stockId = 0;
         int sharesBought = 0;
@@ -102,7 +103,7 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         } else if (costOfOperation > balanceCash) {
             return false;
         }
-        boost::scoped_ptr<sql::PreparedStatement> insert_stmt(
+        std::unique_ptr<sql::PreparedStatement> insert_stmt(
             con->prepareStatement(std::string("INSERT INTO transaction (userId, stockId, quantity, price, dateOfTransaction, status) VALUES (") +
                 "?, ?, ?, ?, NOW(), 'pending')")
         );
@@ -112,8 +113,8 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         insert_stmt->setDouble(4, lastSalePrice);
         insert_stmt->execute();
 
-        boost::scoped_ptr<sql::PreparedStatement> portfolio_stmt(
-            con->prepareStatement(std::string("INSERT INTO portfolio (userId, stockId, quantity, totalCost) VALUES (") + 
+        std::unique_ptr<sql::PreparedStatement> portfolio_stmt(
+            con->prepareStatement(std::string("INSERT INTO portfolio (userId, stockId, quantity, totalCost) VALUES (") +
                 "?, ?, ?, ?) ON DUPLICATE KEY UPDATE quantity=quantity" + op + "?, totalCost=totalCost" + op + "?"
             )
         );
@@ -125,19 +126,19 @@ bool StockOperation::operate(std::string const& stockCode, std::string const& qu
         portfolio_stmt->setDouble(6, costOfOperation);
         portfolio_stmt->execute();
 
-        boost::scoped_ptr<sql::PreparedStatement> balance_stmt(
+        std::unique_ptr<sql::PreparedStatement> balance_stmt(
             con->prepareStatement(std::string("UPDATE user SET balancecash=balancecash" + balanceOp + "? WHERE id=?"))
         );
         balance_stmt->setDouble(1, costOfOperation);
         balance_stmt->setInt(2, userId);
         balance_stmt->execute();
         return true;
-    } catch (sql::SQLException &e) {
-        std::cout << "# ERR: SQLException in " << __FILE__;
-        std::cout << "(" << __FUNCTION__ << ") on line " << __LINE__ << std::endl;
-        std::cout << "# ERR: " << e.what();
-        std::cout << " (MySQL error code: " << e.getErrorCode();
-        exit(1);
+    } catch (const sql::SQLException &ex) {
+        app.logger().error(std::string("# ERR: SQLException with database in ") + __FILE__);
+        app.logger().error(std::string("(") + __FUNCTION__ + ") on line " + std::to_string(__LINE__));
+        app.logger().error(std::string("# ERR: ") + ex.what());
+        app.logger().error(std::string(" (MySQL error code: ") + std::to_string(ex.getErrorCode()));
+        throw ex;
     }
     return false;
 }

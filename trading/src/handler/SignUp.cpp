@@ -1,8 +1,9 @@
 
-#include "handler/SignUp.hpp"
+#include "SignUp.hpp"
 
 #include <Poco/Util/Application.h>
 #include <string>
+#include <iostream>
 
 namespace trading {
 namespace handler {
@@ -18,14 +19,14 @@ void SignUp::handleRequest(HTTPServerRequest& request,
     app.logger().information("Request signup from "
         + request.clientAddress().toString());
 
-    if (request.hasCredentials()) 
+    if (request.hasCredentials())
     {
         app.logger().information("User already registered");
         response.redirect("/");
         return;
     }
-
-    std::string templateFilePath(app.config().getString("application.dir") + "templates/signup.html");
+    app.logger().information(app.config().getString("application.dir") + " appdir");
+    std::string templateFilePath(app.config().getString("application.dir") + "../../templates/signup.html");
     response.sendFile(templateFilePath, "text/html");
 }
 

@@ -1,4 +1,4 @@
-#include "handler/Dashboard.hpp"
+#include "Dashboard.hpp"
 
 #include <Poco/Util/Application.h>
 #include <string>
@@ -17,14 +17,14 @@ void Dashboard::handleRequest(HTTPServerRequest& request,
     app.logger().information("Request dashboard from "
         + request.clientAddress().toString());
 
-    if (!request.hasCredentials()) 
+    if (!request.hasCredentials())
     {
         app.logger().information("Can\t access.");
         response.redirect("/");
         return;
     }
 
-    std::string templateFilePath(app.config().getString("application.dir") + "templates/dashboard.html");
+    std::string templateFilePath(app.config().getString("application.dir") + "../../templates/dashboard.html");
     response.sendFile(templateFilePath, "text/html");
 }
 

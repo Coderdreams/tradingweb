@@ -58,13 +58,13 @@ void RegisterTrader::saveUser(std::string username, std::string password)
     Application& app = Application::instance();
     try {
         auto con = trading::MySQLConnection::connect();
+        // FIXME: for security hash the pass before insert
         std::unique_ptr<sql::PreparedStatement> prep_stmt(
             con->prepareStatement("INSERT IGNORE INTO user(name, pass) VALUES (?, SHA2(?, 512))")
         );
         prep_stmt->setString(1, username);
         prep_stmt->setString(2, password);
         prep_stmt->execute();
-        trading::MySQLConnection::endConnection();
     } catch (const sql::SQLException &ex) {
         app.logger().error(std::string("# ERR: SQLException with database in ") + __FILE__);
         app.logger().error(std::string("(") + __FUNCTION__ + ") on line " + std::to_string(__LINE__));

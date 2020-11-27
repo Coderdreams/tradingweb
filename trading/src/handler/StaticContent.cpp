@@ -1,5 +1,5 @@
 
-#include "handler/StaticContent.hpp"
+#include "StaticContent.hpp"
 
 #include <Poco/Util/Application.h>
 #include <string>
@@ -19,7 +19,7 @@ void StaticContent::handleRequest(HTTPServerRequest& request,
         + request.clientAddress().toString());
     std::string uri(request.getURI());
     std::string staticFolder("static/");
-    std::string templateFilePath(app.config().getString("application.dir") + staticFolder + 
+    std::string templateFilePath(app.config().getString("application.dir") + "../../" + staticFolder +
         uri.substr(staticFolder.length()));
     response.sendFile(templateFilePath, "text/html");
 }

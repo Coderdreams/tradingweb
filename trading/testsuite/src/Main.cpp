@@ -37,4 +37,4 @@ protected:
 
 } // namespace: trading
 
-POCO_APP_MAIN(trading::TestApplication);
+POCO_APP_MAIN(trading::TestApplication)
